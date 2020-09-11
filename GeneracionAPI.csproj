@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -10,11 +10,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controladores\" />
+    <Compile Remove="Migrations\20200903215944_Plantas2.cs" />
+    <Compile Remove="Migrations\20200903215944_Plantas2.Designer.cs" />
+    <Compile Remove="Migrations\20200903220630_Plantas2.cs" />
+    <Compile Remove="Migrations\20200903220630_Plantas2.Designer.cs" />
+    <Compile Remove="Migrations\20200903221241_Plantas2.cs" />
+    <Compile Remove="Migrations\20200903221241_Plantas2.Designer.cs" />
+    <Compile Remove="Migrations\20200903221911_Plantas2.cs" />
+    <Compile Remove="Migrations\20200903221911_Plantas2.Designer.cs" />
+    <Compile Remove="Migrations\20200910174312_ScadaValor.cs" />
+    <Compile Remove="Migrations\20200910174312_ScadaValor.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+    <Folder Include="wwwroot\archivos\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
@@ -23,6 +38,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="18.2.0.57" />
   </ItemGroup>
 
 

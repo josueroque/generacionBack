@@ -64,8 +64,11 @@ C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Microsoft.A
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Core.dll
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Stores.dll
-C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.csproj.CoreCompileInputs.cache
-C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.dll
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.pdb
 C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.genruntimeconfig.cache
+C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Syncfusion.Compression.Portable.dll
+C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Syncfusion.Licensing.dll
+C:\Users\Josue\Desktop\Balance\GeneracionAPI\bin\Debug\netcoreapp3.1\Syncfusion.XlsIO.Portable.dll
+C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.csproj.CoreCompileInputs.cache
+C:\Users\Josue\Desktop\Balance\GeneracionAPI\obj\Debug\netcoreapp3.1\GeneracionAPI.MvcApplicationPartsAssemblyInfo.cache

@@ -10,7 +10,7 @@ namespace GeneracionAPI.Entidades
     {
         public int Id { get; set; }
         [Required]
-        public decimal tension { get; set; }
+        public float tension { get; set; }
         public int NivelId { get; set; }
         public Nivel Nivel { get; set; }
 
