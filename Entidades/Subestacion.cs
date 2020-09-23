@@ -10,8 +10,9 @@ namespace GeneracionAPI.Entidades
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(15)]
+        [StringLength(80)]
         public string Nombre { get; set; }
+        [StringLength(10)]
         public string Nomenclatura { get; set; }
         public int ZonaId { get; set; }
         public Zona Zona { get; set; }

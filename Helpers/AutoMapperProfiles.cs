@@ -20,6 +20,18 @@ namespace GeneracionAPI.Helpers
 
             ;
             CreateMap<ArchivoPatchDTO, Archivo>().ReverseMap();
+            
+            CreateMap<Subestacion, SubestacionDTO>().ReverseMap();
+            CreateMap<SubestacionCreacionDTO, Subestacion>();
+            CreateMap<SubestacionPatchDTO, Subestacion>().ReverseMap();
+            
+            CreateMap<Planta, PlantaDTO>().ReverseMap();
+            CreateMap<PlantaCreacionDTO, Planta>();
+            CreateMap<PlantaPatchDTO, Planta>().ReverseMap();
+
+            CreateMap<ScadaValor, ScadaValorDTO>().ReverseMap();
+            CreateMap<ScadaValorCreacionDTO, ScadaValor>();
+//            CreateMap<ScadaValorPatchDTO, ScadaValor>().ReverseMap();
 
         }
     }

@@ -110,8 +110,8 @@ namespace GeneracionAPI.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<string>("Nomenclatura")
                         .IsRequired()
@@ -132,6 +132,9 @@ namespace GeneracionAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FuenteId");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
 
                     b.HasIndex("OrigenId");
 
@@ -161,6 +164,9 @@ namespace GeneracionAPI.Migrations
                     b.Property<int>("IdUsuarioModifica")
                         .HasColumnType("int");
 
+                    b.Property<int>("PlantaId")
+                        .HasColumnType("int");
+
                     b.Property<float>("Valor")
                         .HasColumnType("real");
 
@@ -172,7 +178,9 @@ namespace GeneracionAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Fecha", "Hora")
+                    b.HasIndex("PlantaId");
+
+                    b.HasIndex("Fecha", "Hora", "PlantaId")
                         .IsUnique();
 
                     b.ToTable("ScadaValores");
@@ -187,16 +195,20 @@ namespace GeneracionAPI.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasColumnType("nvarchar(80)")
+                        .HasMaxLength(80);
 
                     b.Property<string>("Nomenclatura")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
 
                     b.Property<int>("ZonaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
 
                     b.HasIndex("ZonaId");
 
@@ -242,7 +254,7 @@ namespace GeneracionAPI.Migrations
 
             modelBuilder.Entity("GeneracionAPI.Entidades.Planta", b =>
                 {
-                    b.HasOne("GeneracionAPI.Entidades.Subestacion", "Fuente")
+                    b.HasOne("GeneracionAPI.Entidades.Fuente", "Fuente")
                         .WithMany()
                         .HasForeignKey("FuenteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -263,6 +275,15 @@ namespace GeneracionAPI.Migrations
                     b.HasOne("GeneracionAPI.Entidades.Tension", "Tension")
                         .WithMany()
                         .HasForeignKey("TensionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GeneracionAPI.Entidades.ScadaValor", b =>
+                {
+                    b.HasOne("GeneracionAPI.Entidades.Planta", "Planta")
+                        .WithMany()
+                        .HasForeignKey("PlantaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

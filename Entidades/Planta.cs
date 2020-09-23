@@ -10,7 +10,7 @@ namespace GeneracionAPI.Entidades
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(20)]
+        [StringLength(100)]
         public string Nombre { get; set; }
         [Required]
         public string Nomenclatura { get; set; }
@@ -23,7 +23,7 @@ namespace GeneracionAPI.Entidades
         public int SubestacionId { get; set; }
         public Subestacion Subestacion{ get; set; }
         public int FuenteId { get; set; }
-        public Subestacion Fuente { get; set; }
+        public Fuente Fuente { get; set; }
 
 
     }

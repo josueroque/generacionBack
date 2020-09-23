@@ -15,6 +15,8 @@ namespace GeneracionAPI.Entidades
         public int IdUsuarioModifica { get; set; }
         public DateTime fechaHoraGuarda { get; set; }
         public DateTime fechaHoraModifica { get; set; }
-        
+        public int PlantaId { get; set; }
+        public Planta Planta { get; set; }
+
     }
 }

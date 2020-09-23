@@ -27,12 +27,20 @@ namespace GeneracionAPI.Contexts
         public DbSet<ScadaValor> ScadaValores { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Planta>()
+             .HasIndex(p => new { p.Nombre })
+            .IsUnique(true);
+
+            modelBuilder.Entity<Subestacion>()
+                 .HasIndex(p => new { p.Nombre })
+                .IsUnique(true);
+
             modelBuilder.Entity<Archivo>()
                 .HasIndex(p => new { p.Fecha, p.SCADA })
                 .IsUnique(true);
 
             modelBuilder.Entity<ScadaValor>()
-                .HasIndex(p => new { p.Fecha, p.Hora })
+                .HasIndex(p => new { p.Fecha, p.Hora,p.PlantaId })
                 .IsUnique(true);
         }
     }

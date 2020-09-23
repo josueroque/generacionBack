@@ -21,6 +21,7 @@ using System.Data.OleDb;
 using Syncfusion.XlsIO;
 using Syncfusion.Drawing;
 using Microsoft.AspNetCore.Hosting;
+using System.Diagnostics;
 
 namespace GeneracionAPI.Controllers
 {
@@ -29,12 +30,18 @@ namespace GeneracionAPI.Controllers
     public class ArchivosController : CustomBaseController
     {
         private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext context2;
+        private readonly ApplicationDbContext context3;
+        private readonly ApplicationDbContext context4;
         private readonly IMapper mapper;
         private readonly IAlmacenadorArchivos almacenadorArchivos;
         private readonly ILogger<ArchivosController> logger;
         private readonly IWebHostEnvironment env;
         private readonly string contenedor = "archivos";
         public ArchivosController(ApplicationDbContext context,
+            ApplicationDbContext context2,
+            ApplicationDbContext context3,
+            ApplicationDbContext context4,
             IMapper mapper,
             IAlmacenadorArchivos almacenadorArchivos,
             ILogger<ArchivosController> logger,
@@ -42,6 +49,9 @@ namespace GeneracionAPI.Controllers
             : base(context, mapper)
         {
             this.context = context;
+            this.context2 = context2;
+            this.context3 = context3;
+            this.context4 = context4;
             this.mapper = mapper;
             this.almacenadorArchivos = almacenadorArchivos;
             this.logger = logger;
@@ -63,7 +73,7 @@ namespace GeneracionAPI.Controllers
                     var contenido = memoryStream.ToArray();
                     var extension = Path.GetExtension(archivoCreacionDTO.Ruta.FileName);
                     nombreArchivo= $"{Guid.NewGuid()}{extension}";
-                    archivo.Ruta = await almacenadorArchivos.GuardarArchivo(contenido, extension, contenedor, archivoCreacionDTO.Ruta.ContentType,nombreArchivo);
+                    archivo.Ruta =  almacenadorArchivos.GuardarArchivo(contenido, extension, contenedor, archivoCreacionDTO.Ruta.ContentType,nombreArchivo).Result;
 
                 }
             }
@@ -72,7 +82,7 @@ namespace GeneracionAPI.Controllers
             await context.SaveChangesAsync();
             var archivoDTO = mapper.Map<ArchivoDTO>(archivo);
             // return NoContent();
-            procesarExcel(archivo.Id, nombreArchivo);
+           await procesarExcel(archivo.Id, nombreArchivo,archivo.Fecha);
            return new CreatedAtRouteResult("obtenerArchivo", new { id = archivo.Id }, archivoDTO);
         }
 
@@ -105,42 +115,81 @@ namespace GeneracionAPI.Controllers
             return mapper.Map<ArchivoDTO>(archivo);
         }
 
-        private async void  procesarExcel(int id,string nombreArchivo) {
-            var archivo = await context.Archivos
-               .FirstOrDefaultAsync(x => x.Id == id);
-            if (archivo == null)
+        public async Task procesarExcel(int id, string nombreArchivo, DateTime fecha) {
+            try
             {
-               // return NotFound();
+                var archivo = context.Archivos
+               .FirstOrDefaultAsync(x => x.Id == id).Result;
+
+                if (archivo == null)
+                {
+                    // return NotFound();
+                }
+
+                ExcelEngine excelEngine = new ExcelEngine();
+
+                IApplication application = excelEngine.Excel;
+
+                application.DefaultVersion = ExcelVersion.Excel2013;
+
+                string basePath = env.WebRootPath + @"\archivos\" + nombreArchivo;
+
+                FileStream sampleFile = new FileStream(basePath, FileMode.Open);
+
+                IWorkbook workbook = application.Workbooks.Open(sampleFile);
+
+                // IWorksheet worksheet = workbook.Worksheets[0];
+
+                string[] columnas = new string[] { "A", "B", "C","D","E", "F", "G", "H", "I", "J",
+                                                   "K", "L", "M","N","O", "P", "Q", "R", "S", "T",
+                                                   "U", "V", "W","X","Y", "Z"  };
+
+
+                //    var plantas = await context.Plantas.ToList();
+
+                foreach (IWorksheet hoja in workbook.Worksheets)
+                {
+
+                    var fuente = context.Fuentes
+                        .FirstOrDefaultAsync(x => x.Nombre == hoja.Name.Substring(4, hoja.Name.Length - 4)).Result;
+
+
+                    //      for (int i = 0; i < hoja.Columns.Length; i++)
+                    for (int i = 0; i < 3; i++)
+                    {
+
+                        var planta = context.Plantas
+                            .FirstOrDefaultAsync(x => x.RotulacionSCADA == hoja.Range[columnas[i] + "1"].DisplayText).Result;
+                        if (planta != null)
+                        {
+                            for (int j = 3; j <= 26; j++)
+                            {
+                                float valor = 0;
+                                if ((hoja.Range[columnas[i] + j.ToString()].DisplayText).ToString().Length > 0)
+                                {
+                                    valor = float.Parse(hoja.Range[columnas[i] + j.ToString()].DisplayText);
+                                }
+                                context.Add(new Entidades.ScadaValor()
+                                {
+                                    Valor = valor,
+                                    Fecha = fecha,
+                                    Hora = Int16.Parse(hoja.Range["A" + j.ToString()].DisplayText),
+                                    PlantaId = planta.Id
+
+                                });
+
+                            }
+                            //string result = context.SaveChangesAsync().Result.ToString();
+                        }
+                    }
+                }
+                await context.SaveChangesAsync();
             }
-
-            ExcelEngine excelEngine = new ExcelEngine();
-                 
-            IApplication application = excelEngine.Excel;
-
-            application.DefaultVersion = ExcelVersion.Excel2013;
-
-            string basePath = env.WebRootPath + @"\archivos\" +nombreArchivo;
-
-            FileStream sampleFile = new FileStream(basePath,FileMode.Open);
-
-            IWorkbook workbook = application.Workbooks.Open(sampleFile);
-
-            IWorksheet worksheet = workbook.Worksheets[0];
-
-            foreach (IWorksheet hoja in workbook.Worksheets) { 
-                
+            catch (Exception ex){
+                var prueba = ex;
+            
             }
-
-            //int h = 0;
-            //for (int i = 0; i <= worksheet.Rows.Length; i++) {
-            //     h = i;
-            //}
-            var k = worksheet.Range["A15"];
-
-            //worksheet.Columns.Count;
-                        
-
-
         }
+
     }
 }
