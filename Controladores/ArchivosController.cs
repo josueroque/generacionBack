@@ -30,9 +30,6 @@ namespace GeneracionAPI.Controllers
     public class ArchivosController : CustomBaseController
     {
         private readonly ApplicationDbContext context;
-        private readonly ApplicationDbContext context2;
-        private readonly ApplicationDbContext context3;
-        private readonly ApplicationDbContext context4;
         private readonly IMapper mapper;
         private readonly IAlmacenadorArchivos almacenadorArchivos;
         private readonly ILogger<ArchivosController> logger;
@@ -49,9 +46,7 @@ namespace GeneracionAPI.Controllers
             : base(context, mapper)
         {
             this.context = context;
-            this.context2 = context2;
-            this.context3 = context3;
-            this.context4 = context4;
+
             this.mapper = mapper;
             this.almacenadorArchivos = almacenadorArchivos;
             this.logger = logger;
@@ -153,7 +148,7 @@ namespace GeneracionAPI.Controllers
         //    }
 
         //    filtroArchivoDTO.CantidadRegistrosPorPagina = 10;
-        //    await HttpContext.InsertarParametrosPaginacion(queryable,filtroArchivoDTO.CantidadRegistrosPorPagina);
+        //    await HttpContext.InsertarParametrosPaginacion(queryable, filtroArchivoDTO.CantidadRegistrosPorPagina);
 
         //    var archivos = await queryable.Paginar(filtroArchivoDTO.Paginacion).FirstOrDefaultAsync(x => x.SCADA == true);
 

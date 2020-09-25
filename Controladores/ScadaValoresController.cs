@@ -60,8 +60,8 @@ namespace GeneracionAPI.Controladores
             }
 
             filtroScadaValorDTO.CantidadRegistrosPorPagina = 200000;
-            await HttpContext.InsertarParametrosPaginacion(queryable,
-                filtroScadaValorDTO.CantidadRegistrosPorPagina);
+            
+            await HttpContext.InsertarParametrosPaginacion(queryable, filtroScadaValorDTO.CantidadRegistrosPorPagina);
 
             var scadaValores = await queryable.Paginar(filtroScadaValorDTO.Paginacion).ToListAsync();
 

@@ -9,7 +9,7 @@ namespace GeneracionAPI.DTOs
     {
         public int Pagina { get; set; } = 1;
         private int cantidadRegistrosPorPagina = 10;
-        private readonly int cantidadMaximaRegistrosPorPagina = 1000;
+        private readonly int cantidadMaximaRegistrosPorPagina = 200000;
 
         public int CantidadRegistrosPorPagina
         {
