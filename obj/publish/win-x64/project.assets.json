@@ -8519,19 +8519,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Josue\\.nuget\\packages\\": {}
+    "C:\\Users\\jroque\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Josue\\Desktop\\Balance\\GeneracionAPI\\GeneracionAPI.csproj",
+      "projectUniqueName": "C:\\Users\\jroque\\Desktop\\generacionBack\\generacionBack\\GeneracionAPI.csproj",
       "projectName": "GeneracionAPI",
-      "projectPath": "C:\\Users\\Josue\\Desktop\\Balance\\GeneracionAPI\\GeneracionAPI.csproj",
-      "packagesPath": "C:\\Users\\Josue\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Josue\\Desktop\\Balance\\GeneracionAPI\\obj\\publish\\win-x64\\",
+      "projectPath": "C:\\Users\\jroque\\Desktop\\generacionBack\\generacionBack\\GeneracionAPI.csproj",
+      "packagesPath": "C:\\Users\\jroque\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jroque\\Desktop\\generacionBack\\generacionBack\\obj\\publish\\win-x64\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Josue\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jroque\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -8608,7 +8608,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
       }
     },
     "runtimes": {
