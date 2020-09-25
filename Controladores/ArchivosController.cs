@@ -115,7 +115,70 @@ namespace GeneracionAPI.Controllers
             return mapper.Map<ArchivoDTO>(archivo);
         }
 
-        public async Task procesarExcel(int id, string nombreArchivo, DateTime fecha) {
+        [HttpGet("fecha")]
+        public async Task<ActionResult<ArchivoDTO>> Get([FromQuery]  DateTime fecha)
+        {
+            string mes = fecha.Year.ToString();
+            string dia = fecha.Day.ToString();
+            if (mes.Length == 1)
+            {
+                mes = '0' + mes;
+            }
+            if (dia.Length == 1)
+            {
+                dia = '0' + dia;
+            }
+            var fechaCorta = fecha.Date;
+            var archivo = await context.Archivos
+                .FirstOrDefaultAsync(x => x.Fecha <= fecha && x.Fecha >= fecha);
+            if (archivo == null)
+            {
+                return NotFound();
+            }
+
+            //            archivo.PeliculasActores = pelicula.PeliculasActores.OrderBy(x => x.Orden).ToList();
+
+            return mapper.Map<ArchivoDTO>(archivo);
+        }
+
+        //[HttpGet("filtro")]
+        //public async Task<ActionResult<Archivo>> Filtrar(FiltroArchivoDTO filtroArchivoDTO)
+        //{
+
+        //    var queryable = context.Archivos.AsQueryable();
+
+        //    if (filtroArchivoDTO.Fecha.Year >= 2020)
+        //    {
+        //        queryable = queryable.Where(x => x.Fecha >= filtroArchivoDTO.Fecha && x.Fecha <= filtroArchivoDTO.Fecha);
+        //    }
+
+        //    filtroArchivoDTO.CantidadRegistrosPorPagina = 10;
+        //    await HttpContext.InsertarParametrosPaginacion(queryable,filtroArchivoDTO.CantidadRegistrosPorPagina);
+
+        //    var archivos = await queryable.Paginar(filtroArchivoDTO.Paginacion).FirstOrDefaultAsync(x => x.SCADA == true);
+
+        //    return mapper.Map<ArchivoDTO>(archivos);
+
+        //}
+
+
+
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            //var archivo = await context.Archivos
+            //.FirstOrDefaultAsync(x => x.Id == id);
+            //if (archivo != null)
+            //{
+            //     context.Remove(new Entidades.ScadaValor() {ArchivoId = id }); ;
+            //}
+            return await Delete<Archivo>(id);
+        }
+
+
+        public async Task procesarExcel(int id, string nombreArchivo, DateTime fecha)
+        {
             try
             {
                 var archivo = context.Archivos
@@ -165,6 +228,7 @@ namespace GeneracionAPI.Controllers
                             for (int j = 3; j <= 26; j++)
                             {
                                 float valor = 0;
+
                                 if ((hoja.Range[columnas[i] + j.ToString()].DisplayText).ToString().Length > 0)
                                 {
                                     valor = float.Parse(hoja.Range[columnas[i] + j.ToString()].DisplayText);
@@ -174,7 +238,9 @@ namespace GeneracionAPI.Controllers
                                     Valor = valor,
                                     Fecha = fecha,
                                     Hora = Int16.Parse(hoja.Range["A" + j.ToString()].DisplayText),
-                                    PlantaId = planta.Id
+                                    PlantaId = planta.Id,
+                                    ArchivoId=id,
+                             
 
                                 });
 
@@ -185,11 +251,13 @@ namespace GeneracionAPI.Controllers
                 }
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 var prueba = ex;
-            
+
             }
         }
 
     }
+
 }

@@ -19,5 +19,7 @@ namespace GeneracionAPI.DTOs
         
         public int PlantaId { get; set; }
         public Planta Planta { get; set; }
+        public int ArchivoId { get; set; }
+        public Archivo Archivo { get; set; }
     }
 }

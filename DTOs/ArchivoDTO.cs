@@ -8,13 +8,21 @@ namespace GeneracionAPI.DTOs
 {
     public class ArchivoDTO
     {
-        public int Id { get; set; }
+        //  public int Id { get; set; }
 
+        //  public string Ruta { get; set; }
+        //  [Required]
+        ////  public string nombreArchivo { get; set; }
+        //  public DateTime fecha { get; set; }
+        //  [Required]
+        //  public bool SCADA { get; set; }
+        public int Id { get; set; }
+        [Required]
         public string Ruta { get; set; }
         [Required]
-      //  public string nombreArchivo { get; set; }
-        public DateTime fecha { get; set; }
+        // public string nombreArchivo { get; set; }
+        public DateTime Fecha { get; set; }
         [Required]
-        public bool SCADA { get; set; }
+        public Boolean SCADA { get; set; }
     }
 }
