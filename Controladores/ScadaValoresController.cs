@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace GeneracionAPI.Controladores
@@ -38,11 +39,15 @@ namespace GeneracionAPI.Controladores
 
         }
 
+
         [HttpGet("filtro")]
-        public async Task<ActionResult<List<ScadaValorDTO>>> Filtrar(FiltroScadaValorDTO filtroScadaValorDTO)
+        public async Task<IActionResult> Filtrar(FiltroScadaValorDTO filtroScadaValorDTO)
         {
 
-            var queryable = context.ScadaValores.Include(x => x.Planta).AsQueryable();
+            var queryable = context.ScadaValores
+                .Include(x => x.Planta)
+                .ThenInclude(planta => planta.Subestacion)
+                .AsQueryable();
 
             if (filtroScadaValorDTO.FechaInicial.Year >= 2020)
             {
@@ -59,13 +64,38 @@ namespace GeneracionAPI.Controladores
                 queryable = queryable.Where(x => x.Planta.RotulacionSCADA == filtroScadaValorDTO.NombrePLanta);
             }
 
+            if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdFuente))
+            {
+                queryable = queryable.Where(x => x.Planta.FuenteId == Int16.Parse(filtroScadaValorDTO.IdFuente));
+            }
+
+            if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdZona))
+            {
+                queryable = queryable.Where(x => x.Planta.Subestacion.ZonaId == Int16.Parse(filtroScadaValorDTO.IdZona));
+            }
+
+
+
+            var queryable2 = queryable.GroupBy(o => new { o.Planta.Nombre })
+                 .Select(g => new
+                 {
+                     g.Key.Nombre,
+                     Sum = g.Sum(o => o.Valor),
+                 });
+                if (filtroScadaValorDTO.totales == true)
+                {
+                    var valores = await queryable2.ToListAsync();
+                    return Ok(valores);
+                }
+
             filtroScadaValorDTO.CantidadRegistrosPorPagina = 200000;
-            
+
             await HttpContext.InsertarParametrosPaginacion(queryable, filtroScadaValorDTO.CantidadRegistrosPorPagina);
 
             var scadaValores = await queryable.Paginar(filtroScadaValorDTO.Paginacion).ToListAsync();
 
-            return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+            // return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+            return Ok(scadaValores);
 
         }
 

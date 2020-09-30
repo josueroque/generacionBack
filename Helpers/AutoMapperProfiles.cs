@@ -24,12 +24,20 @@ namespace GeneracionAPI.Helpers
             CreateMap<Subestacion, SubestacionDTO>().ReverseMap();
             CreateMap<SubestacionCreacionDTO, Subestacion>();
             CreateMap<SubestacionPatchDTO, Subestacion>().ReverseMap();
-            
+
+            CreateMap<Fuente, FuenteDTO>().ReverseMap();
+
             CreateMap<Planta, PlantaDTO>().ReverseMap();
             CreateMap<PlantaCreacionDTO, Planta>();
             CreateMap<PlantaPatchDTO, Planta>().ReverseMap();
 
             CreateMap<ScadaValor, ScadaValorDTO>().ReverseMap();
+            CreateMap<ScadaValorDTO, ScadaValor>();
+            CreateMap<IEnumerable<ScadaValor>, ScadaValorDTO>()
+                .ForMember(x => x.Id, x => x.MapFrom(y => y.FirstOrDefault().Id))
+                .ForMember(x => x.PlantaId, x => x.MapFrom(y => y.FirstOrDefault().PlantaId))
+                .ForMember(x => x.Sum, x => x.MapFrom(y => y.FirstOrDefault().Valor));
+
             CreateMap<ScadaValorCreacionDTO, ScadaValor>();
 //            CreateMap<ScadaValorPatchDTO, ScadaValor>().ReverseMap();
 

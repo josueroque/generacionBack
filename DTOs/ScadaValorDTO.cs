@@ -21,5 +21,7 @@ namespace GeneracionAPI.DTOs
         public Planta Planta { get; set; }
         public int ArchivoId { get; set; }
         public Archivo Archivo { get; set; }
+
+        public float Sum { get; set; }
     }
 }
