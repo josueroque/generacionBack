@@ -16,6 +16,7 @@ namespace GeneracionAPI.Entidades
         public string Nomenclatura { get; set; }
         public string RotulacionSCADA { get; set; }
         public int Nodo { get; set; }
+        public bool Intercambio { get; set; }
         public int OrigenId { get; set; }
         public Origen Origen { get; set; }
         public int TensionId { get; set; }

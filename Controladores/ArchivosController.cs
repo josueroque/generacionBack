@@ -200,7 +200,11 @@ namespace GeneracionAPI.Controllers
 
                 string[] columnas = new string[] { "A", "B", "C","D","E", "F", "G", "H", "I", "J",
                                                    "K", "L", "M","N","O", "P", "Q", "R", "S", "T",
-                                                   "U", "V", "W","X","Y", "Z"  };
+                                                   "U", "V", "W","X","Y", "Z" ,"AA","AB","AC",
+                                                   "AD","AE","AF","AG","AH","AI","AJ","AK","AL",
+                                                   "AM","AN","AO","AP","AQ","AR","AS","AT","AU",
+                                                   "AV","AW","AX","AY","AZ"
+                                                  };
 
 
                 //    var plantas = await context.Plantas.ToList();
@@ -208,43 +212,52 @@ namespace GeneracionAPI.Controllers
                 foreach (IWorksheet hoja in workbook.Worksheets)
                 {
 
-                    var fuente = context.Fuentes
-                        .FirstOrDefaultAsync(x => x.Nombre == hoja.Name.Substring(4, hoja.Name.Length - 4)).Result;
-
-
-                    //      for (int i = 0; i < hoja.Columns.Length; i++)
-                    for (int i = 0; i < 3; i++)
+                    //var fuente = context.Fuentes
+                    //    .FirstOrDefaultAsync(x => x.Nombre == hoja.Name.Substring(4, hoja.Name.Length - 4)).Result;
+                    if (hoja.Name != "Curva_Demanda" && hoja.Name != "Inadvertido" && hoja.Name != "Frecuencia")
                     {
 
-                        var planta = context.Plantas
-                            .FirstOrDefaultAsync(x => x.RotulacionSCADA == hoja.Range[columnas[i] + "1"].DisplayText).Result;
-                        if (planta != null)
+                        //      for (int i = 0; i < hoja.Columns.Length; i++)
+                        for (int i = 1; i <= hoja.Columns.Length-1; i++)
                         {
-                            for (int j = 3; j <= 26; j++)
+
+                             var planta = context.Plantas
+                                .FirstOrDefaultAsync(x => x.RotulacionSCADA == hoja.Range[columnas[i] + "1"].DisplayText).Result;
+                            if (planta != null)
                             {
-                                float valor = 0;
-
-                                if ((hoja.Range[columnas[i] + j.ToString()].DisplayText).ToString().Length > 0)
+                                for (int j = 3; j <= 26; j++)
                                 {
-                                    valor = float.Parse(hoja.Range[columnas[i] + j.ToString()].DisplayText);
+                                    float valor = 0;
+
+                                    if ((hoja.Range[columnas[i] + j.ToString()].DisplayText).ToString().Length > 0)
+                                    {
+                                        if (planta.Nombre == "COHESSA" || planta.Nombre == "SOPOSA")
+                                        {
+                                            valor = (float.Parse(hoja.Range[columnas[i] + j.ToString()].DisplayText)*-1);
+                                        }
+                                        else
+                                        {
+                                            valor = float.Parse(hoja.Range[columnas[i] + j.ToString()].DisplayText);
+                                        }
+                                    }
+                                    context.Add(new Entidades.ScadaValor()
+                                    {
+                                        Valor = valor,
+                                        Fecha = fecha,
+                                        Hora = Int16.Parse(hoja.Range["A" + j.ToString()].DisplayText),
+                                        PlantaId = planta.Id,
+                                        ArchivoId = id,
+
+
+                                    });
+
                                 }
-                                context.Add(new Entidades.ScadaValor()
-                                {
-                                    Valor = valor,
-                                    Fecha = fecha,
-                                    Hora = Int16.Parse(hoja.Range["A" + j.ToString()].DisplayText),
-                                    PlantaId = planta.Id,
-                                    ArchivoId=id,
-                             
-
-                                });
-
+                                //string result = context.SaveChangesAsync().Result.ToString();
                             }
-                            //string result = context.SaveChangesAsync().Result.ToString();
                         }
                     }
+                    await context.SaveChangesAsync();
                 }
-                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
