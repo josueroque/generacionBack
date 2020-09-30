@@ -48,6 +48,7 @@ namespace GeneracionAPI.Controladores
                 .Include(x => x.Planta)
                 .ThenInclude(planta => planta.Subestacion)
                 .AsQueryable();
+                
 
             if (filtroScadaValorDTO.FechaInicial.Year >= 2020)
             {
