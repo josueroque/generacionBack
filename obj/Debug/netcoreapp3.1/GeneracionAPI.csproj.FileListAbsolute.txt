@@ -137,8 +137,6 @@ C:\Users\jroque\Desktop\generacionBack\generacionBack\bin\Debug\netcoreapp3.1\ru
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.csprojAssemblyReference.cache
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.AssemblyInfoInputs.cache
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.AssemblyInfo.cs
-C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.csproj.CoreCompileInputs.cache
-C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.RazorTargetAssemblyInfo.cache
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.csproj.CopyComplete
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\staticwebassets\GeneracionAPI.StaticWebAssets.Manifest.cache
@@ -146,3 +144,6 @@ C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\st
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.dll
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.pdb
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.genruntimeconfig.cache
+C:\Users\jroque\Desktop\generacionBack\generacionBack\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.csproj.CoreCompileInputs.cache
+C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Debug\netcoreapp3.1\GeneracionAPI.MvcApplicationPartsAssemblyInfo.cache

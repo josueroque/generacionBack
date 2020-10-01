@@ -21,6 +21,14 @@
     <Compile Remove="Migrations\20200903221911_Plantas2.Designer.cs" />
     <Compile Remove="Migrations\20200910174312_ScadaValor.cs" />
     <Compile Remove="Migrations\20200910174312_ScadaValor.Designer.cs" />
+    <Compile Remove="Migrations\20201001171425_Identity.cs" />
+    <Compile Remove="Migrations\20201001171425_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201001171641_Identity.cs" />
+    <Compile Remove="Migrations\20201001171641_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201001171922_AdminData.cs" />
+    <Compile Remove="Migrations\20201001171922_AdminData.Designer.cs" />
+    <Compile Remove="Migrations\20201001174800_AdminData.cs" />
+    <Compile Remove="Migrations\20201001174800_AdminData.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +38,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.1.7" />

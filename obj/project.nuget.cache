@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "TUiuIVJEdjKb9DN+ZkjjDAVna6U3Jp4qba7gAIyyG+y0OLqwI0nRdos9TyZPR7AJEM149pFdwIQ0ZvuKk3fkiA==",
+  "dgSpecHash": "Y+kLgpis/zfZHNrnnC29QwFnoXBuQnQlEWAO5LmilvOi81E/OoTrjRqd36YnG9B3qJn4RTa7AYnXJNBYmasUgg==",
   "success": true,
   "projectFilePath": "C:\\Users\\jroque\\Desktop\\generacionBack\\generacionBack\\GeneracionAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jroque\\.nuget\\packages\\automapper\\10.0.0\\automapper.10.0.0.nupkg.sha512",
     "C:\\Users\\jroque\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.0.1\\automapper.extensions.microsoft.dependencyinjection.8.0.1.nupkg.sha512",
+    "C:\\Users\\jroque\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\3.1.8\\microsoft.aspnetcore.authentication.jwtbearer.3.1.8.nupkg.sha512",
     "C:\\Users\\jroque\\.nuget\\packages\\microsoft.aspnetcore.cors\\2.2.0\\microsoft.aspnetcore.cors.2.2.0.nupkg.sha512",
     "C:\\Users\\jroque\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\3.1.7\\microsoft.aspnetcore.cryptography.internal.3.1.7.nupkg.sha512",
     "C:\\Users\\jroque\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\3.1.7\\microsoft.aspnetcore.cryptography.keyderivation.3.1.7.nupkg.sha512",

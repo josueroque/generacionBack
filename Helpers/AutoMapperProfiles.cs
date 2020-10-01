@@ -39,7 +39,9 @@ namespace GeneracionAPI.Helpers
                 .ForMember(x => x.Sum, x => x.MapFrom(y => y.FirstOrDefault().Valor));
 
             CreateMap<ScadaValorCreacionDTO, ScadaValor>();
-//            CreateMap<ScadaValorPatchDTO, ScadaValor>().ReverseMap();
+            //            CreateMap<ScadaValorPatchDTO, ScadaValor>().ReverseMap();
+
+            CreateMap<IdentityUser, UsuarioDTO>();
 
         }
     }

@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using GeneracionAPI.Helpers;
 using GeneracionAPI.Contexts;
 using GeneracionAPI.Servicios;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace GeneracionAPI
 {
@@ -52,6 +53,23 @@ namespace GeneracionAPI
                .AddNewtonsoftJson(options =>
                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                     .AddEntityFrameworkStores<ApplicationDbContext>()
+                     .AddDefaultTokenProviders();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+               .AddJwtBearer(options =>
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = false,
+                       ValidateAudience = false,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       IssuerSigningKey = new SymmetricSecurityKey(
+                   Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
+                       ClockSkew = TimeSpan.Zero
+                   }
+               );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,6 +97,8 @@ namespace GeneracionAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
