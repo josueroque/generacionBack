@@ -5,9 +5,11 @@ using GeneracionAPI.DTOs;
 using GeneracionAPI.Entidades;
 using GeneracionAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -95,7 +97,35 @@ namespace GeneracionAPI.Controladores
 
             var scadaValores = await queryable.Paginar(filtroScadaValorDTO.Paginacion).ToListAsync();
 
-            // return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+            //// return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+
+            //var Fechas = new List<DateTime>();
+            //foreach (var item in scadaValores)
+            //{
+            //    int pos = Fechas.IndexOf( item.Fecha);
+            //    if (pos == -1)
+            //    {
+            //        Fechas.Add(item.Fecha);
+            //        // the array contains the string and the pos variable
+            //        // will have its position in the array
+            //    }
+            //}
+
+            //Fechas.Sort();
+
+            //var DataCruzada = new List<Object>();
+
+            //var Horas= new int[24] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+
+            //foreach(DateTime item in Fechas)
+            //{
+            //    foreach (int item2 in Horas)
+            //    { 
+            //       // var ValoresPlanta=scadaValores.FindAll(e=>e.Fecha==item&&)
+            //    }
+            
+            //}
+
             return Ok(scadaValores);
 
         }

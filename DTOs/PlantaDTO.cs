@@ -10,6 +10,7 @@ namespace GeneracionAPI.DTOs
     {
         public string Nomenclatura { get; set; }
         public string RotulacionSCADA { get; set; }
+        public string Nombre { get; set; }
         public int Nodo { get; set; }
         public int OrigenId { get; set; }
         public bool Intercambio { get; set; }

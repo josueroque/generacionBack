@@ -136,26 +136,6 @@ namespace GeneracionAPI.Controllers
             return mapper.Map<ArchivoDTO>(archivo);
         }
 
-        //[HttpGet("filtro")]
-        //public async Task<ActionResult<Archivo>> Filtrar(FiltroArchivoDTO filtroArchivoDTO)
-        //{
-
-        //    var queryable = context.Archivos.AsQueryable();
-
-        //    if (filtroArchivoDTO.Fecha.Year >= 2020)
-        //    {
-        //        queryable = queryable.Where(x => x.Fecha >= filtroArchivoDTO.Fecha && x.Fecha <= filtroArchivoDTO.Fecha);
-        //    }
-
-        //    filtroArchivoDTO.CantidadRegistrosPorPagina = 10;
-        //    await HttpContext.InsertarParametrosPaginacion(queryable, filtroArchivoDTO.CantidadRegistrosPorPagina);
-
-        //    var archivos = await queryable.Paginar(filtroArchivoDTO.Paginacion).FirstOrDefaultAsync(x => x.SCADA == true);
-
-        //    return mapper.Map<ArchivoDTO>(archivos);
-
-        //}
-
 
 
 
