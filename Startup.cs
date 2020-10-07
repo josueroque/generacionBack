@@ -53,9 +53,11 @@ namespace GeneracionAPI
                .AddNewtonsoftJson(options =>
                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            //            services.AddIdentity<IdentityUser, IdentityRole>(options => { options.Tokens.PasswordResetTokenProvider = "TokenProvider"; })
             services.AddIdentity<IdentityUser, IdentityRole>()
-                     .AddEntityFrameworkStores<ApplicationDbContext>()
-                     .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+                  
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>
@@ -69,7 +71,9 @@ namespace GeneracionAPI
                    Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
                        ClockSkew = TimeSpan.Zero
                    }
-               );
+               )
+               
+               ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

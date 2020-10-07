@@ -22,6 +22,8 @@ using Syncfusion.XlsIO;
 using Syncfusion.Drawing;
 using Microsoft.AspNetCore.Hosting;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GeneracionAPI.Controllers
 {
@@ -55,7 +57,7 @@ namespace GeneracionAPI.Controllers
 
 
         [HttpPost]
-    //    [EnableCors]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post([FromForm]ArchivoCreacionDTO archivoCreacionDTO)
         {
             var archivo = mapper.Map<Archivo>(archivoCreacionDTO);
@@ -140,14 +142,10 @@ namespace GeneracionAPI.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Delete(int id)
         {
-            //var archivo = await context.Archivos
-            //.FirstOrDefaultAsync(x => x.Id == id);
-            //if (archivo != null)
-            //{
-            //     context.Remove(new Entidades.ScadaValor() {ArchivoId = id }); ;
-            //}
+
             return await Delete<Archivo>(id);
         }
 

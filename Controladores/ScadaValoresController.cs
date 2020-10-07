@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using GeneracionAPI.Contexts;
 using GeneracionAPI.Controllers;
 using GeneracionAPI.DTOs;
 using GeneracionAPI.Entidades;
 using GeneracionAPI.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +46,7 @@ namespace GeneracionAPI.Controladores
 
 
         [HttpGet("filtro")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Filtrar(FiltroScadaValorDTO filtroScadaValorDTO)
         {
 
@@ -77,8 +81,6 @@ namespace GeneracionAPI.Controladores
                 queryable = queryable.Where(x => x.Planta.Subestacion.ZonaId == Int16.Parse(filtroScadaValorDTO.IdZona));
             }
 
-
-
             var queryable2 = queryable.GroupBy(o => new { o.Planta.Nombre })
                  .Select(g => new
                  {
@@ -97,36 +99,60 @@ namespace GeneracionAPI.Controladores
 
             var scadaValores = await queryable.Paginar(filtroScadaValorDTO.Paginacion).ToListAsync();
 
-            //// return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+            // return mapper.Map<List<ScadaValorDTO>>(scadaValores);
+     
 
-            //var Fechas = new List<DateTime>();
-            //foreach (var item in scadaValores)
-            //{
-            //    int pos = Fechas.IndexOf( item.Fecha);
-            //    if (pos == -1)
-            //    {
-            //        Fechas.Add(item.Fecha);
-            //        // the array contains the string and the pos variable
-            //        // will have its position in the array
-            //    }
-            //}
+        var Fechas = new List<DateTime>();
+            foreach (var item in scadaValores)
+            {
+                int pos = Fechas.IndexOf(item.Fecha);
+                if (pos == -1)
+                {
+                    Fechas.Add(item.Fecha);
+                    // the array contains the string and the pos variable
+                    // will have its position in the array
+                }
+            }
 
-            //Fechas.Sort();
+            Fechas.Sort();
 
-            //var DataCruzada = new List<Object>();
+            var DataCruzada = new List<Object>();
 
-            //var Horas= new int[24] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
+            var Horas = new int[24] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
 
-            //foreach(DateTime item in Fechas)
-            //{
-            //    foreach (int item2 in Horas)
-            //    { 
-            //       // var ValoresPlanta=scadaValores.FindAll(e=>e.Fecha==item&&)
-            //    }
-            
-            //}
+            foreach (DateTime item in Fechas)
+            {
+                foreach (int item2 in Horas)
 
-            return Ok(scadaValores);
+                {
+                    var ValoresDiccionario = new Dictionary<String ,Object >();
+                    var ValoresPlanta = scadaValores.FindAll(e => e.Fecha == item && e.Hora == item2);
+                    var auxiliar =new Object { };
+                    ValoresDiccionario.Add("fecha", item.ToString("dd/MM/yyyy"));
+                    ValoresDiccionario.Add("hora", item2);
+                    foreach (var item3 in ValoresPlanta) 
+                    {
+
+                     //   ValoresDiccionario.Add(item3.Planta.RotulacionSCADA,  item3.Valor*1000);
+                        if (item3.Valor > 0)
+                        {
+                            ValoresDiccionario.Add(item3.Planta.Nombre, item3.Valor * 1000);
+                        }
+                        else
+                        {
+                            ValoresDiccionario.Add(item3.Planta.Nombre, 0);
+                        }
+                         
+                    }
+
+                    DataCruzada.Add(ValoresDiccionario);
+
+                }
+
+            }
+
+            // return Ok(scadaValores);
+            return Ok(DataCruzada);
 
         }
 

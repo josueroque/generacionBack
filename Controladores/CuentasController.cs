@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using GeneracionAPI.Contexts;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace GeneracionAPI.Controllers
 {
@@ -41,6 +42,8 @@ namespace GeneracionAPI.Controllers
             _configuration = configuration;
             this.context = context;
         }
+
+
 
         [HttpPost("Crear")]
         public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo model)
@@ -82,6 +85,44 @@ namespace GeneracionAPI.Controllers
             }
         }
 
+        [HttpPost("Login/cambiar")]
+       [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<IdentityResult>> LoginCambiar([FromBody] UserInfo model, [FromHeader] string NuevoPassword)
+        {
+            try
+            {
+                var resultado = await _signInManager.PasswordSignInAsync(model.Email,
+                model.Password, isPersistent: false, lockoutOnFailure: false);
+                IdentityUser user = _userManager.Users.First(x => x.Email == model.Email);
+
+                if (resultado.Succeeded)
+                {
+                    
+                    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    IdentityResult updateResult = await _userManager.ResetPasswordAsync( user , code ,NuevoPassword);
+                    if (updateResult.Succeeded)
+                    {
+                        return Ok(updateResult);
+                    }
+                    else
+                    {
+                        return BadRequest(updateResult.Errors.ToList()[0].Code);
+                    }
+                   
+                }
+                else
+                {
+                    return BadRequest("Invalid login attempt");
+                }
+            }
+            catch (Exception error)
+            {
+                var err = error;
+                return BadRequest(err.Message); ;
+            }
+        }
+
+
         [HttpPost("RenovarToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserToken>> Renovar()
@@ -92,6 +133,40 @@ namespace GeneracionAPI.Controllers
             };
 
             return await ConstruirToken(userInfo);
+        }
+        private async Task<UserToken> ConstruirTokenReset(UserInfo userInfo)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, userInfo.Email),
+                new Claim(ClaimTypes.Email, userInfo.Email),
+            };
+
+            var identityUser = await _userManager.FindByEmailAsync(userInfo.Email);
+
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, identityUser.Id));
+
+            var claimsDB = await _userManager.GetClaimsAsync(identityUser);
+
+            claims.AddRange(claimsDB);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expiracion = DateTime.UtcNow.AddYears(1);
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: null,
+                expires: expiracion);
+
+            return new UserToken()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiracion = expiracion
+            };
+
         }
 
         private async Task<UserToken> ConstruirToken(UserInfo userInfo)
