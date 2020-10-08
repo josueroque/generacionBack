@@ -81,11 +81,30 @@ namespace GeneracionAPI.Controladores
                 queryable = queryable.Where(x => x.Planta.Subestacion.ZonaId == Int16.Parse(filtroScadaValorDTO.IdZona));
             }
 
-            var queryable2 = queryable.GroupBy(o => new { o.Planta.Nombre })
+            if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdTension))
+            {
+                queryable = queryable.Where(x => x.Planta.TensionId == Int16.Parse(filtroScadaValorDTO.IdTension));
+            }
+            if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdOrigen))
+            {
+                queryable = queryable.Where(x => x.Planta.OrigenId == Int16.Parse(filtroScadaValorDTO.IdOrigen));
+            }
+
+            var queryable2 = queryable.GroupBy(o => new { o.Planta.Nombre, 
+                                                        Fuente=o.Planta.Fuente.Nombre,
+                                                        Zona=o.Planta.Subestacion.Zona.Nombre,
+                                                        Tension=o.Planta.Tension.Nivel.Nombre,
+                                                        Origen=o.Planta.Origen.Nombre
+                                                        
+                                                          })
                  .Select(g => new
                  {
                      g.Key.Nombre,
-                     Sum = g.Sum(o => o.Valor),
+                     g.Key.Fuente,
+                     g.Key.Zona,
+                     g.Key.Tension,
+                     g.Key.Origen,
+                     Sum = g.Sum(o => o.Valor>0? o.Valor*1000:0),
                  });
                 if (filtroScadaValorDTO.totales == true)
                 {
