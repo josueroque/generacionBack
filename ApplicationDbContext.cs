@@ -29,6 +29,7 @@ namespace GeneracionAPI.Contexts
         public DbSet<Archivo> Archivos { get; set; }
 
         public DbSet<ScadaValor> ScadaValores { get; set; }
+        public DbSet<ComercialDato> ComercialDatos{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Planta>()
@@ -47,6 +48,12 @@ namespace GeneracionAPI.Contexts
                 .HasIndex(p => new { p.Fecha, p.Hora,p.PlantaId })
                 .IsUnique(true);
             SeedData(modelBuilder);
+
+            modelBuilder.Entity<ComercialDato>()
+                .HasIndex(p => new { p.Fecha, p.Hora, p.PlantaId })
+                .IsUnique(true);
+            SeedData(modelBuilder);
+
             base.OnModelCreating(modelBuilder);
         }
         private void SeedData(ModelBuilder modelBuilder)

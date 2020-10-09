@@ -8,9 +8,7 @@ namespace GeneracionAPI.DTOs
     public class ScadaValorTotalesDTO
     {
     
-
         public int PlantaId { get; set; }
-
         public float Valor { get; set; }
         public float Sum { get; set; }
     }

@@ -4,14 +4,16 @@ using GeneracionAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GeneracionAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201009162241_DatosComerciales")]
+    partial class DatosComerciales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,43 +44,6 @@ namespace GeneracionAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Archivos");
-                });
-
-            modelBuilder.Entity("GeneracionAPI.Entidades.ComercialDato", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ArchivoId")
-                        .HasColumnType("int");
-
-                    b.Property<float?>("Entregado")
-                        .HasColumnType("real");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Hora")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PlantaId")
-                        .HasColumnType("int");
-
-                    b.Property<float?>("Recibido")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArchivoId");
-
-                    b.HasIndex("PlantaId");
-
-                    b.HasIndex("Fecha", "Hora", "PlantaId")
-                        .IsUnique();
-
-                    b.ToTable("ComercialDatos");
                 });
 
             modelBuilder.Entity("GeneracionAPI.Entidades.Fuente", b =>
@@ -159,9 +124,6 @@ namespace GeneracionAPI.Migrations
 
                     b.Property<int>("OrigenId")
                         .HasColumnType("int");
-
-                    b.Property<string>("RotulacionENEE")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RotulacionSCADA")
                         .HasColumnType("nvarchar(max)");
@@ -482,21 +444,6 @@ namespace GeneracionAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("GeneracionAPI.Entidades.ComercialDato", b =>
-                {
-                    b.HasOne("GeneracionAPI.Entidades.Archivo", "Archivo")
-                        .WithMany()
-                        .HasForeignKey("ArchivoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GeneracionAPI.Entidades.Planta", "Planta")
-                        .WithMany()
-                        .HasForeignKey("PlantaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("GeneracionAPI.Entidades.Planta", b =>

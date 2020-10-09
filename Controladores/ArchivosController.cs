@@ -74,12 +74,19 @@ namespace GeneracionAPI.Controllers
 
                 }
             }
-            //AsignarOrdenActores(pelicula);
+           
             context.Add(archivo);
             await context.SaveChangesAsync();
             var archivoDTO = mapper.Map<ArchivoDTO>(archivo);
-            // return NoContent();
-           await procesarExcel(archivo.Id, nombreArchivo,archivo.Fecha);
+            if (archivoCreacionDTO.SCADA == true)
+            {
+                await procesarExcel(archivo.Id, nombreArchivo, archivo.Fecha);
+            }
+            else
+            {
+                await procesarExcelComercial(archivo.Id, nombreArchivo, archivo.Fecha);
+            }
+    
            return new CreatedAtRouteResult("obtenerArchivo", new { id = archivo.Id }, archivoDTO);
         }
 
@@ -113,7 +120,7 @@ namespace GeneracionAPI.Controllers
         }
 
         [HttpGet("fecha")]
-        public async Task<ActionResult<ArchivoDTO>> Get([FromQuery]  DateTime fecha)
+        public async Task<ActionResult<ArchivoDTO>> Get([FromQuery]  DateTime fecha, bool scada)
         {
             string mes = fecha.Year.ToString();
             string dia = fecha.Day.ToString();
@@ -127,7 +134,7 @@ namespace GeneracionAPI.Controllers
             }
             var fechaCorta = fecha.Date;
             var archivo = await context.Archivos
-                .FirstOrDefaultAsync(x => x.Fecha <= fecha && x.Fecha >= fecha);
+                .FirstOrDefaultAsync(x => x.Fecha <= fecha && x.Fecha >= fecha && x.SCADA==scada);
             if (archivo == null)
             {
                 return NotFound();
@@ -150,7 +157,7 @@ namespace GeneracionAPI.Controllers
         }
 
 
-        public async Task procesarExcel(int id, string nombreArchivo, DateTime fecha)
+        private async Task procesarExcel(int id, string nombreArchivo, DateTime fecha)
         {
             try
             {
@@ -243,6 +250,88 @@ namespace GeneracionAPI.Controllers
 
             }
         }
+
+        private async Task procesarExcelComercial(int id, string nombreArchivo, DateTime fecha)
+        {
+            try
+            {
+                var archivo = context.Archivos
+               .FirstOrDefaultAsync(x => x.Id == id).Result;
+
+
+                ExcelEngine excelEngine = new ExcelEngine();
+
+                IApplication application = excelEngine.Excel;
+
+                application.DefaultVersion = ExcelVersion.Excel2013;
+
+                string basePath = env.WebRootPath + @"\archivos\" + nombreArchivo;
+
+                FileStream sampleFile = new FileStream(basePath, FileMode.Open);
+
+                IWorkbook workbook = application.Workbooks.Open(sampleFile);
+
+                var hoja = workbook.Worksheets[0];
+
+                        for (int i = 1; i <= hoja.Rows.Length - 1; i++)
+                        {
+
+                            var planta = context.Plantas
+                               .FirstOrDefaultAsync(x => x.RotulacionENEE == hoja.Range["A"+i].DisplayText).Result;
+                            if (planta != null)
+                            {
+
+
+                                DateTime fechaExcel =Convert.ToDateTime(hoja.Range["B" + i].DisplayText);
+                                Nullable <float> entregado = 0 ;
+                                Nullable<float> recibido = 0;
+                                    if (hoja.Range["C" + i].DisplayText != "")
+                                    {
+                                        entregado = float.Parse(hoja.Range["C" + i].DisplayText);
+                                    }
+                                    else
+                                    {
+                                        entregado =null;
+                                    }
+
+                                    if (hoja.Range["C" + i].DisplayText != "")
+                                    {
+                                        recibido = float.Parse(hoja.Range["D" + i].DisplayText);
+                                    }
+                                    else {
+                                        recibido = null;
+                                    }
+
+                                if (recibido!=null)
+                                {
+                                    context.Add(new Entidades.ComercialDato()
+                                    {
+
+                                        Recibido = recibido,
+                                        Entregado = entregado,
+                                        Fecha = fecha,
+                                        Hora = fechaExcel.Hour,
+                                        PlantaId = planta.Id,
+                                        ArchivoId = id,
+
+
+                                    });
+                                }                 
+                      
+                            }
+
+                        }
+                    
+                    await context.SaveChangesAsync();
+                
+            }
+            catch (Exception ex)
+            {
+                var prueba = ex;
+
+            }
+        }
+
 
     }
 
