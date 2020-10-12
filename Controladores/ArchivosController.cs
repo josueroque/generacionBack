@@ -272,58 +272,117 @@ namespace GeneracionAPI.Controllers
                 IWorkbook workbook = application.Workbooks.Open(sampleFile);
 
                 var hoja = workbook.Worksheets[0];
+                string[] plantasEspeciales ={ "LA ENSENADA T579","LA ENSENADA T580 <= 20","LA ENSENADA T580 > 20","OJO DE AGUA ETAPA I",
+                                                           "OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
+                DateTime fechaGlobal = DateTime.Now;
+                for (int i = 1; i <= hoja.Rows.Length - 1; i++)
+                {
 
-                        for (int i = 1; i <= hoja.Rows.Length - 1; i++)
+                    int comprobarPlanta = Array.IndexOf(plantasEspeciales, hoja.Range["A" + i].DisplayText);
+
+                    var planta = context.Plantas
+                    .FirstOrDefaultAsync(x => x.RotulacionENEE == hoja.Range["A" + i].DisplayText).Result;
+                    if (planta != null && comprobarPlanta < 0)
+                    {
+
+                        if (hoja.Range["B" + i].DisplayText != "")
+
                         {
 
-                            var planta = context.Plantas
-                               .FirstOrDefaultAsync(x => x.RotulacionENEE == hoja.Range["A"+i].DisplayText).Result;
-                            if (planta != null)
+
+                         
+                            DateTime fechaExcel = Convert.ToDateTime(hoja.Range["B" + i].DisplayText);
+                            Nullable<float> entregado = 0;
+                            Nullable<float> recibido = 0;
+                            if (hoja.Range["C" + i].DisplayText != "")
                             {
-
-
-                                DateTime fechaExcel =Convert.ToDateTime(hoja.Range["B" + i].DisplayText);
-                                Nullable <float> entregado = 0 ;
-                                Nullable<float> recibido = 0;
-                                    if (hoja.Range["C" + i].DisplayText != "")
-                                    {
-                                        entregado = float.Parse(hoja.Range["C" + i].DisplayText);
-                                    }
-                                    else
-                                    {
-                                        entregado =null;
-                                    }
-
-                                    if (hoja.Range["C" + i].DisplayText != "")
-                                    {
-                                        recibido = float.Parse(hoja.Range["D" + i].DisplayText);
-                                    }
-                                    else {
-                                        recibido = null;
-                                    }
-
-                                if (recibido!=null)
-                                {
-                                    context.Add(new Entidades.ComercialDato()
-                                    {
-
-                                        Recibido = recibido,
-                                        Entregado = entregado,
-                                        Fecha = fecha,
-                                        Hora = fechaExcel.Hour,
-                                        PlantaId = planta.Id,
-                                        ArchivoId = id,
-
-
-                                    });
-                                }                 
-                      
+                                entregado = float.Parse(hoja.Range["C" + i].DisplayText);
+                            }
+                            else
+                            {
+                                entregado = null;
                             }
 
+                            if (hoja.Range["C" + i].DisplayText != "")
+                            {
+                                recibido = float.Parse(hoja.Range["D" + i].DisplayText);
+                            }
+                            else
+                            {
+                                recibido = null;
+                            }
+
+                            if (recibido != null)
+                            {
+                                context.Add(new Entidades.ComercialDato()
+                                {
+
+                                    Recibido = recibido,
+                                    Entregado = entregado,
+                                    Fecha = fecha,
+                                    Hora = fechaExcel.Hour,
+                                    PlantaId = planta.Id,
+                                    ArchivoId = id,
+
+
+                                });
+                            }
                         }
-                    
-                    await context.SaveChangesAsync();
+                    }
+
+                }
+
+                await context.SaveChangesAsync(); //operacion 
+
+                //LaeizReguleto
+                var plantaLR = context.Plantas
+                .FirstOrDefaultAsync(x => x.Nombre == "LAEISZ REGULETO").Result;
+
+                for (int i = 0; i < 24; i++)
+                {
+
                 
+                    var resultLR = hoja.Rows.Where(o => (o.Cells[0].CalculatedValue== "LA ENSENADA T579"|| o.Cells[0].CalculatedValue == "LA ENSENADA T580 <= 20"
+                    || o.Cells[0].CalculatedValue == "LA ENSENADA T580 > 20"
+                    && CheckDate(o.Cells[1].CalculatedValue)==true )
+                    )
+                   // .Where(p => CheckDate( p.Cells[1].CalculatedValue) == true)
+                    .AsQueryable()
+                    
+                    .GroupBy(o => new {
+                        PlantaId=plantaLR.Id,
+                        Fecha = fechaGlobal,
+                        Hora= i
+
+
+                })
+                 .Select(g => new
+                 {
+                     g.Key.PlantaId,
+                     g.Key.Fecha,
+                     g.Key.Hora,
+                     SumRecibido = g.Sum(o => float.Parse(o.Cells[2].CalculatedValue) > 0 ? float.Parse(o.Cells[2].CalculatedValue) * 1000 : 0),
+                     SumEntregado = g.Sum(o => float.Parse(o.Cells[3].CalculatedValue) > 0 ? float.Parse(o.Cells[3].CalculatedValue) * 1000 : 0),
+                 }).ToList(); 
+
+                    context.Add(new Entidades.ComercialDato()
+                    {
+
+                        Recibido =resultLR[0].SumRecibido ,
+                        Entregado = resultLR[0].SumEntregado,
+                        Fecha = fecha,
+                        Hora = resultLR[0].Hora,
+                        PlantaId = resultLR[0].PlantaId,
+                        ArchivoId = id,
+
+
+                    });
+                }
+
+                await context.SaveChangesAsync(); //operacion 
+
+
+
             }
             catch (Exception ex)
             {
@@ -332,7 +391,16 @@ namespace GeneracionAPI.Controllers
             }
         }
 
+        protected bool CheckDate(String date)
+    {
+        DateTime Temp;
 
+
+        if (DateTime.TryParse(date, out Temp) == true)
+            return true;
+        else
+            return false;
+    }
     }
 
 }
