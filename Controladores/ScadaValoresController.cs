@@ -41,9 +41,7 @@ namespace GeneracionAPI.Controladores
 
             // return await Get<ScadaValor, ScadaValorDTO>();
 
-
         }
-
 
         [HttpGet("filtro")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -83,7 +81,7 @@ namespace GeneracionAPI.Controladores
 
             if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdTension))
             {
-                queryable = queryable.Where(x => x.Planta.TensionId == Int16.Parse(filtroScadaValorDTO.IdTension));
+                queryable = queryable.Where(x => x.Planta.Tension.NivelId == Int16.Parse(filtroScadaValorDTO.IdTension));
             }
             if (!string.IsNullOrEmpty(filtroScadaValorDTO.IdOrigen))
             {
@@ -117,10 +115,8 @@ namespace GeneracionAPI.Controladores
             await HttpContext.InsertarParametrosPaginacion(queryable, filtroScadaValorDTO.CantidadRegistrosPorPagina);
 
             var scadaValores = await queryable.Paginar(filtroScadaValorDTO.Paginacion).ToListAsync();
-
             // return mapper.Map<List<ScadaValorDTO>>(scadaValores);
      
-
         var Fechas = new List<DateTime>();
             foreach (var item in scadaValores)
             {
@@ -174,7 +170,6 @@ namespace GeneracionAPI.Controladores
             return Ok(DataCruzada);
 
         }
-
 
         [HttpGet("{id:int}", Name = "obtenerScadaValor")]
         public async Task<ActionResult<ScadaValorDTO>> Get(int id)

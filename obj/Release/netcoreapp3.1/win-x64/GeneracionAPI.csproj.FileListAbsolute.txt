@@ -131,3 +131,4 @@ C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Release\netcoreapp3.1\
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Release\netcoreapp3.1\win-x64\GeneracionAPI.pdb
 C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Release\netcoreapp3.1\win-x64\GeneracionAPI.genruntimeconfig.cache
 C:\Users\jroque\Desktop\generacionBack\generacionBack\bin\Release\netcoreapp3.1\win-x64\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\jroque\Desktop\generacionBack\generacionBack\obj\Release\netcoreapp3.1\win-x64\GeneracionAPI.csprojAssemblyReference.cache

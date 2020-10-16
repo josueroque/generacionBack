@@ -166,11 +166,17 @@ namespace GeneracionAPI.Migrations
                     b.Property<string>("RotulacionSCADA")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("SubPlanta")
+                        .HasColumnType("bit");
+
                     b.Property<int>("SubestacionId")
                         .HasColumnType("int");
 
                     b.Property<int>("TensionId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("TieneSubplantas")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

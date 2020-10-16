@@ -18,7 +18,6 @@ namespace GeneracionAPI.Contexts
 
         }
 
-
         public DbSet<Fuente> Fuentes { get; set; }
         public DbSet<Zona> Zonas { get; set; }
         public DbSet<Nivel> Niveles{ get; set; }
