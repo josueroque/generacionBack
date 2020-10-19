@@ -278,7 +278,7 @@ namespace GeneracionAPI.Controllers
                 //        ,"OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
                 string[] plantasEspeciales = { }; //{ "OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
                 DateTime fechaGlobal = DateTime.Now;
-                for (int i = 1490; i <= hoja.Rows.Length - 1; i++)
+                for (int i =1; i <= hoja.Rows.Length - 1; i++)
                 {
 
                   //  int comprobarPlanta = Array.IndexOf(plantasEspeciales, hoja.Range["A" + i].DisplayText);
@@ -286,7 +286,7 @@ namespace GeneracionAPI.Controllers
                     var planta = context.Plantas
                     
                     .FirstOrDefaultAsync( x => x.RotulacionENEE.StartsWith(hoja.Range["A" + i].DisplayText)
-                                          && x.RotulacionENEE.EndsWith(hoja.Range["A" + i].DisplayText)).Result;
+                                          && x.RotulacionENEE.EndsWith(hoja.Range["A" + i].DisplayText) ).Result;
               
                     if (planta != null )
                     {
@@ -412,8 +412,8 @@ namespace GeneracionAPI.Controllers
                     g.Key.PlantaId,
                     g.Key.Fecha,
                     g.Key.Hora,
-                    SumRecibido = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                    SumEntregado = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
+                    SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
+                    SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
                     //SumRecibido = g.Sum(o => float.Parse(o.Cells[2].CalculatedValue) > 0 ? float.Parse(o.Cells[2].CalculatedValue) : 0),
                     //SumEntregado = g.Sum(o => float.Parse(o.Cells[3].CalculatedValue) > 0 ? float.Parse(o.Cells[3].CalculatedValue) : 0),
                 }).ToList();
@@ -458,8 +458,8 @@ namespace GeneracionAPI.Controllers
                     g.Key.PlantaId,
                     g.Key.Fecha,
                     g.Key.Hora,
-                    SumRecibido = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                    SumEntregado = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
+                    SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
+                    SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
                 }).ToList();
 
                     context.Add(new Entidades.ComercialDato()

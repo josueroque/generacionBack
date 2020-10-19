@@ -89,34 +89,36 @@ namespace GeneracionAPI.Controladores
             if (filtroComercialDatoDTO.totales==true)
             {
                 queryable = queryable.Where(x => x.Planta.SubPlanta ==false);
+
+                var queryableTotal = queryable.GroupBy(o => new
+                {
+                    o.Planta.Nombre,
+                    Fuente = o.Planta.Fuente.Nombre,
+                    Zona = o.Planta.Subestacion.Zona.Nombre,
+                    Tension = o.Planta.Tension.Nivel.Nombre,
+                    Origen = o.Planta.Origen.Nombre
+
+                })
+                     .Select(g => new
+                     {
+                         NombrePlanta= g.Key.Nombre,
+                         g.Key.Fuente,
+                         g.Key.Zona,
+                         g.Key.Tension,
+                         g.Key.Origen,
+                         Entregado = g.Sum(o => o.Entregado > 0 ? o.Entregado : 0),
+                         Recibido = g.Sum(o => o.Recibido > 0 ? o.Recibido : 0),
+
+                     });
+                var totales = await queryableTotal.ToListAsync();
+                return Ok(totales);
             }
             else
             {
                 queryable = queryable.Where(x =>  x.Planta.TieneSubplantas==false );
             }
 
-            //var queryable2 = queryable.GroupBy(o => new {
-            //    o.Planta.Nombre,
-            //    Fuente = o.Planta.Fuente.Nombre,
-            //    Zona = o.Planta.Subestacion.Zona.Nombre,
-            //    Tension = o.Planta.Tension.Nivel.Nombre,
-            //    Origen = o.Planta.Origen.Nombre
-
-            //})
-            //     .Select(g => new
-            //     {
-            //         g.Key.Nombre,
-            //         g.Key.Fuente,
-            //         g.Key.Zona,
-            //         g.Key.Tension,
-            //         g.Key.Origen,
-            //         Entregado = g.Sum(o => o.Entregado > 0 ? o.Entregado : 0),
-            //         Recibido = g.Sum(o => o.Recibido > 0 ? o.Recibido : 0),
-
-            //     });
-
-            //if (filtroComercialDatoDTO.totales == true)
-            //{ 
+ 
                  var queryable2 = queryable
                                  .Select(g => new
                                  {
@@ -126,73 +128,14 @@ namespace GeneracionAPI.Controladores
                                      g.Entregado,
                                      g.Recibido,
                                      g.Planta,
-                                    
+                                     Fuente=g.Planta.Fuente.Nombre,
+                                     Zona=g.Planta.Subestacion.Zona.Nombre,
+                                     Origen=g.Planta.Origen.Nombre,
+                                     Tension=g.Planta.Tension.Nivel.Nombre
 
                                  });
             var valores = await queryable2.ToListAsync();
                 return Ok(valores);
-            //}
-
-            //filtroComercialDatoDTO.CantidadRegistrosPorPagina = 200000;
-
-            //await HttpContext.InsertarParametrosPaginacion(queryable, filtroComercialDatoDTO.CantidadRegistrosPorPagina);
-
-            //var comercialDatos = await queryable.Paginar(filtroComercialDatoDTO.Paginacion).ToListAsync();
-
-            //// return mapper.Map<List<ScadaValorDTO>>(scadaValores);
-
-            //var Fechas = new List<DateTime>();
-            //foreach (var item in comercialDatos)
-            //{  
-            //    int pos = Fechas.IndexOf(item.Fecha);
-            //    if (pos == -1)
-            //    {
-            //        Fechas.Add(item.Fecha);
-            //        // the array contains the string and the pos variable
-            //        // will have its position in the array
-            //    }
-            //}
-
-            //Fechas.Sort();
-
-            //var DataCruzada = new List<Object>();
-
-            //var Horas = new int[24] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
-
-            //foreach (DateTime item in Fechas)
-            //{
-            //    foreach (int item2 in Horas)
-
-            //    {
-            //        var ValoresDiccionario = new Dictionary<String, Object>();
-            //        var ValoresPlanta = comercialDatos.FindAll(e => e.Fecha == item && e.Hora == item2);
-            //        var auxiliar = new Object { };
-            //        ValoresDiccionario.Add("fecha", item.ToString("dd/MM/yyyy"));
-            //        ValoresDiccionario.Add("hora", item2);
-            //        foreach (var item3 in ValoresPlanta)
-            //        {
-
-            //            //   ValoresDiccionario.Add(item3.Planta.RotulacionSCADA,  item3.Valor*1000);
-            //            if (item3.Recibido> 0)
-            //            {
-            //                ValoresDiccionario.Add(item3.Planta.Nombre, item3.Recibido);
-            //            }
-            //            else
-            //            {
-            //                ValoresDiccionario.Add(item3.Planta.Nombre, 0);
-            //            }
-
-            //        }
-
-            //        DataCruzada.Add(ValoresDiccionario);
-
-            //    }
-
-            //}
-
-            //// return Ok(scadaValores);
-            //return Ok(DataCruzada);
-
         }
 
         [HttpGet("{id:int}", Name = "obtenerComercialDato")]
