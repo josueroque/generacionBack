@@ -260,7 +260,6 @@ namespace GeneracionAPI.Controllers
                 var archivo = context.Archivos
                .FirstOrDefaultAsync(x => x.Id == id).Result;
 
-
                 ExcelEngine excelEngine = new ExcelEngine();
 
                 IApplication application = excelEngine.Excel;
@@ -278,7 +277,7 @@ namespace GeneracionAPI.Controllers
                 //        ,"OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
                 string[] plantasEspeciales = { }; //{ "OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
                 DateTime fechaGlobal = DateTime.Now;
-                for (int i =1; i <= hoja.Rows.Length - 1; i++)
+                for (int i =1; i <= hoja.Rows.Length ; i++)
                 {
 
                   //  int comprobarPlanta = Array.IndexOf(plantasEspeciales, hoja.Range["A" + i].DisplayText);
@@ -324,7 +323,7 @@ namespace GeneracionAPI.Controllers
                                     Recibido = recibido,
                                     Entregado = entregado,
                                     Fecha = fecha,
-                                    Hora = fechaExcel.Hour,
+                                    Hora = fechaExcel.Hour==0?23: fechaExcel.Hour-1,
                                     PlantaId = planta.Id,
                                     ArchivoId = id,
 
@@ -338,53 +337,6 @@ namespace GeneracionAPI.Controllers
 
                 await context.SaveChangesAsync(); //operacion 
 
-                //LaeizReguleto
-                //var plantaLR = context.Plantas
-                //.FirstOrDefaultAsync(x => x.Nombre == "LAEISZ REGULETO").Result;
-
-                //for (int i = 0; i < 24; i++)
-                //{
-
-
-                //    var resultLR = hoja.Rows.Where(o => (o.Cells[0].DisplayText == "LA ENSENADA T579" || o.Cells[0].DisplayText== "LA ENSENADA T580 <= 20 MW"
-                //        || o.Cells[0].DisplayText== "LA ENSENADA T580 > 20 MW" ) && CheckDate(o.Cells[1].CalculatedValue) == true)
-                //    .AsQueryable()
-                //    .Where(x=> Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour==i)
-                    
-                //    .GroupBy(o => new {
-                //        PlantaId=plantaLR.Id,
-                //        Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
-                //        Hora= i,
-                //        //Recibido= o.Cells[2].CalculatedValue!=""? float.Parse(o.Cells[2].CalculatedValue):0,
-                //        //Entregado = o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0
-
-                //    })
-                //.Select(g => new
-                // {
-                //     g.Key.PlantaId,
-                //     g.Key.Fecha,
-                //     g.Key.Hora,
-                //    SumRecibido = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                //    SumEntregado = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
-                //    //SumRecibido = g.Sum(o => float.Parse(o.Cells[2].CalculatedValue) > 0 ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                //    //SumEntregado = g.Sum(o => float.Parse(o.Cells[3].CalculatedValue) > 0 ? float.Parse(o.Cells[3].CalculatedValue) : 0),
-                //}).ToList(); 
-
-                //    context.Add(new Entidades.ComercialDato()
-                //    {
-
-                //        Recibido =resultLR[0].SumRecibido ,
-                //        Entregado = resultLR[0].SumEntregado,
-                //        Fecha = fecha,
-                //        Hora = resultLR[0].Hora,
-                //        PlantaId = resultLR[0].PlantaId,
-                //        ArchivoId = id,
-
-
-                //    });
-                //}
-
-                //await context.SaveChangesAsync(); //operacion 
 
                 //Ojo de Agua
                 var plantaOA = context.Plantas
@@ -397,12 +349,12 @@ namespace GeneracionAPI.Controllers
                         ) && CheckDate(o.Cells[1].CalculatedValue) == true)
                     .AsQueryable()
                     .Where(x => Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour == i)
-
                     .GroupBy(o => new
                     {
                         PlantaId = plantaOA.Id,
-                        Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
-                        Hora = i,
+                        // Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
+                        Fecha = fecha,
+                        Hora = i == 0 ? 23 : i - 1,
                         //Recibido= o.Cells[2].CalculatedValue!=""? float.Parse(o.Cells[2].CalculatedValue):0,
                         //Entregado = o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0
 
@@ -420,7 +372,6 @@ namespace GeneracionAPI.Controllers
 
                     context.Add(new Entidades.ComercialDato()
                     {
-
                         Recibido = resultOA[0].SumRecibido,
                         Entregado = resultOA[0].SumEntregado,
                         Fecha = fecha,
@@ -450,7 +401,7 @@ namespace GeneracionAPI.Controllers
                     {
                         PlantaId = plantaPS.Id,
                         Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
-                        Hora = i,
+                        Hora = i == 0 ? 23 : i - 1
 
                     })
                 .Select(g => new
@@ -476,7 +427,6 @@ namespace GeneracionAPI.Controllers
                 }
 
                 await context.SaveChangesAsync(); //operacion 
-
 
             }
             catch (Exception ex)
