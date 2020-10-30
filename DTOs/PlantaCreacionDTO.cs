@@ -15,6 +15,7 @@ namespace GeneracionAPI.DTOs
         [Required]
         public string Nomenclatura { get; set; }
         public string RotulacionSCADA { get; set; }
+        public bool RelevanteENEE { get; set; }
         public int Nodo { get; set; }
         public int OrigenId { get; set; }
 

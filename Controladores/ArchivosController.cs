@@ -355,8 +355,6 @@ namespace GeneracionAPI.Controllers
                         // Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
                         Fecha = fecha,
                         Hora = i == 0 ? 23 : i - 1,
-                        //Recibido= o.Cells[2].CalculatedValue!=""? float.Parse(o.Cells[2].CalculatedValue):0,
-                        //Entregado = o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0
 
                     })
                 .Select(g => new
@@ -366,8 +364,7 @@ namespace GeneracionAPI.Controllers
                     g.Key.Hora,
                     SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
                     SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
-                    //SumRecibido = g.Sum(o => float.Parse(o.Cells[2].CalculatedValue) > 0 ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                    //SumEntregado = g.Sum(o => float.Parse(o.Cells[3].CalculatedValue) > 0 ? float.Parse(o.Cells[3].CalculatedValue) : 0),
+
                 }).ToList();
 
                     context.Add(new Entidades.ComercialDato()
@@ -391,42 +388,44 @@ namespace GeneracionAPI.Controllers
                 for (int i = 0; i < 24; i++)
                 {
 
-
                     var resultPS = hoja.Rows.Where(o => (o.Cells[0].DisplayText == "ENER. SOLARES" || o.Cells[0].DisplayText == "FOTOVOLTAICA SUREÑA"
                         || o.Cells[0].DisplayText == "GEN. ENERGETICAS") && CheckDate(o.Cells[1].CalculatedValue) == true)
-                    .AsQueryable()
-                    .Where(x => Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour == i)
-
-                    .GroupBy(o => new
+                    .AsQueryable();
+                    if (resultPS.ToList().Count > 0)
                     {
-                        PlantaId = plantaPS.Id,
-                        Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
-                        Hora = i == 0 ? 23 : i - 1
-
-                    })
-                .Select(g => new
-                {
-                    g.Key.PlantaId,
-                    g.Key.Fecha,
-                    g.Key.Hora,
-                    SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                    SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
-                }).ToList();
-
-                    context.Add(new Entidades.ComercialDato()
-                    {
-
-                        Recibido = resultPS[0].SumRecibido,
-                        Entregado = resultPS[0].SumEntregado,
+                        var resultPS2 = resultPS.Where(x => Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour == i)
+                       .GroupBy(o => new
+                       {
+                           PlantaId = plantaPS.Id,
+                        // Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
                         Fecha = fecha,
-                        Hora = resultPS[0].Hora,
-                        PlantaId = resultPS[0].PlantaId,
-                        ArchivoId = id,
+                           Hora = i == 0 ? 23 : i - 1,
 
-                    });
+                       })
+                       .Select(g => new
+                       {
+                           g.Key.PlantaId,
+                           g.Key.Fecha,
+                           g.Key.Hora,
+                           SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
+                           SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
+
+                       }).ToList();
+
+                        context.Add(new Entidades.ComercialDato()
+                        {
+                            Recibido = resultPS2[0].SumRecibido,
+                            Entregado = resultPS2[0].SumEntregado,
+                            Fecha = fecha,
+                            Hora = resultPS2[0].Hora,
+                            PlantaId = resultPS2[0].PlantaId,
+                            ArchivoId = id,
+
+                        });
+                    }
                 }
-
                 await context.SaveChangesAsync(); //operacion 
+                await grabarVaciosComercial(fecha,id);
 
             }
             catch (Exception ex)
@@ -435,8 +434,33 @@ namespace GeneracionAPI.Controllers
 
             }
         }
+        private async Task grabarVaciosComercial( DateTime fecha,Int32 archivoId)
+        {
 
-        protected bool CheckDate(String date)
+            var ComercialDatos = context.ComercialDatos.Where(y => y.Fecha == fecha)
+                                 .Select(x => x.PlantaId);
+            var plantas = context.Plantas.Where(x => !ComercialDatos.Contains(x.Id) && x.RelevanteENEE==true).ToList();
+      
+            foreach(var item in plantas){
+                for(Int16 i = 0; i < 24;i++)
+                {
+                    context.Add(new Entidades.ComercialDato()
+                    {
+                        Recibido = null,
+                        Entregado = null,
+                        Fecha = fecha,
+                        Hora = i,
+                        PlantaId = item.Id,
+                        ArchivoId = archivoId,
+
+                    });
+                }
+                
+            }
+            
+            await context.SaveChangesAsync();
+        }
+            protected bool CheckDate(String date)
     {
         DateTime Temp;
 
