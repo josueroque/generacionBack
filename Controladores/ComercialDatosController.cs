@@ -52,7 +52,6 @@ namespace GeneracionAPI.Controladores
                 .AsQueryable();
              
 
-
             if (filtroComercialDatoDTO.FechaInicial.Year >= 2020)
             {
                 queryable = queryable.Where(x => x.Fecha >= filtroComercialDatoDTO.FechaInicial);

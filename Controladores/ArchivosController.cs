@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using GeneracionAPI.Migrations;
-//using System.Linq.Dynamic.Core;
 using Microsoft.Extensions.Logging;
 using GeneracionAPI.Controllers;
 using GeneracionAPI.Contexts;
@@ -102,8 +101,6 @@ namespace GeneracionAPI.Controllers
                 return NotFound();
             }
 
-//            archivo.PeliculasActores = pelicula.PeliculasActores.OrderBy(x => x.Orden).ToList();
-
             return mapper.Map<ArchivoDTO>(archivo);
         }
 
@@ -137,18 +134,14 @@ namespace GeneracionAPI.Controllers
             var fechaCorta = fecha.Date;
             var archivo = await context.Archivos
                 .FirstOrDefaultAsync(x => x.Fecha <= fecha && x.Fecha >= fecha && x.SCADA==scada);
+                 grabarCurvaDemandaInicial();
             if (archivo == null)
             {
                 return NotFound();
             }
 
-            //            archivo.PeliculasActores = pelicula.PeliculasActores.OrderBy(x => x.Orden).ToList();
-
-            return mapper.Map<ArchivoDTO>(archivo);
+          return mapper.Map<ArchivoDTO>(archivo);
         }
-
-
-
 
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -183,7 +176,6 @@ namespace GeneracionAPI.Controllers
 
                 IWorkbook workbook = application.Workbooks.Open(sampleFile);
 
-                // IWorksheet worksheet = workbook.Worksheets[0];
 
                 string[] columnas = new string[] { "A", "B", "C","D","E", "F", "G", "H", "I", "J",
                                                    "K", "L", "M","N","O", "P", "Q", "R", "S", "T",
@@ -193,14 +185,9 @@ namespace GeneracionAPI.Controllers
                                                    "AV","AW","AX","AY","AZ"
                                                   };
 
-
-                //    var plantas = await context.Plantas.ToList();
-
                 foreach (IWorksheet hoja in workbook.Worksheets)
                 {
 
-                    //var fuente = context.Fuentes
-                    //    .FirstOrDefaultAsync(x => x.Nombre == hoja.Name.Substring(4, hoja.Name.Length - 4)).Result;
                     if (hoja.Name != "Curva_Demanda" && hoja.Name != "Inadvertido" && hoja.Name != "Frecuencia")
                     {
 
@@ -235,14 +222,29 @@ namespace GeneracionAPI.Controllers
                                         PlantaId = planta.Id,
                                         ArchivoId = id,
 
-
                                     });
 
                                 }
-                                //string result = context.SaveChangesAsync().Result.ToString();
+                          
                             }
                         }
                     }
+                    
+                    if (hoja.Name == "Curva_Demanda")
+                    {
+                        for (int h = 3; h < hoja.Rows.Length; h++)
+                        {
+                            context.Add(new  Entidades.CurvaDemandaValor()
+                            {
+                                Valor = float.Parse(hoja.Range["B" + h.ToString()].DisplayText),
+                                Fecha = fecha,
+                                Hora = DateTime.Parse (hoja.Range["A" + h.ToString()].CalculatedValue).Hour,
+                                Minuto= DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Minute,
+                                ArchivoId = id,
+                            });
+                        }
+                    }
+                    
                     await context.SaveChangesAsync();
                 }
             }
@@ -273,14 +275,10 @@ namespace GeneracionAPI.Controllers
                 IWorkbook workbook = application.Workbooks.Open(sampleFile);
 
                 var hoja = workbook.Worksheets[0];
-                //string[] plantasEspeciales = { "LA ENSENADA T579", "LA ENSENADA T580 <= a 20 MW", "LA ENSENADA T580 > 20 MW" 
-                //        ,"OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
-                string[] plantasEspeciales = { }; //{ "OJO DE AGUA ETAPA I","OJO DE AGUA ETAPA II","ENER. SOLARES","FOTOVOLTAICA SUREÑA","GEN. ENERGETICAS"};
+                string[] plantasEspeciales = { }; 
                 DateTime fechaGlobal = DateTime.Now;
                 for (int i =1; i <= hoja.Rows.Length ; i++)
                 {
-
-                  //  int comprobarPlanta = Array.IndexOf(plantasEspeciales, hoja.Range["A" + i].DisplayText);
 
                     var planta = context.Plantas
                     
@@ -315,8 +313,6 @@ namespace GeneracionAPI.Controllers
                                 recibido = null;
                             }
 
-                            //if (recibido != null|| entregado != null)
-                            //{
                                 context.Add(new Entidades.ComercialDato()
                                 {
 
@@ -327,9 +323,7 @@ namespace GeneracionAPI.Controllers
                                     PlantaId = planta.Id,
                                     ArchivoId = id,
 
-
                                 });
-                          //  }
                         }
                     }
 
@@ -347,36 +341,39 @@ namespace GeneracionAPI.Controllers
 
                     var resultOA = hoja.Rows.Where(o => (o.Cells[0].DisplayText == "OJO DE AGUA ETAPA I" || o.Cells[0].DisplayText == "OJO DE AGUA ETAPA II"
                         ) && CheckDate(o.Cells[1].CalculatedValue) == true)
-                    .AsQueryable()
-                    .Where(x => Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour == i)
-                    .GroupBy(o => new
+                    .AsQueryable();
+                    if (resultOA.ToList().Count > 0)
                     {
-                        PlantaId = plantaOA.Id,
-                        // Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
+                        var resultOA2 = resultOA.Where(x => Convert.ToDateTime(x.Cells[1].CalculatedValue).Hour == i)
+                        .GroupBy(o => new
+                        {
+                            PlantaId = plantaOA.Id,
+                     
                         Fecha = fecha,
-                        Hora = i == 0 ? 23 : i - 1,
+                            Hora = i == 0 ? 23 : i - 1,
 
-                    })
-                .Select(g => new
-                {
-                    g.Key.PlantaId,
-                    g.Key.Fecha,
-                    g.Key.Hora,
-                    SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
-                    SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
-
-                }).ToList();
-
-                    context.Add(new Entidades.ComercialDato()
+                        })
+                    .Select(g => new
                     {
-                        Recibido = resultOA[0].SumRecibido,
-                        Entregado = resultOA[0].SumEntregado,
-                        Fecha = fecha,
-                        Hora = resultOA[0].Hora,
-                        PlantaId = resultOA[0].PlantaId,
-                        ArchivoId = id,
+                        g.Key.PlantaId,
+                        g.Key.Fecha,
+                        g.Key.Hora,
+                        SumEntregado = g.Sum(o => o.Cells[2].CalculatedValue != "" ? float.Parse(o.Cells[2].CalculatedValue) : 0),
+                        SumRecibido = g.Sum(o => o.Cells[3].CalculatedValue != "" ? float.Parse(o.Cells[3].CalculatedValue) : 0)
 
-                    });
+                    }).ToList();
+
+                        context.Add(new Entidades.ComercialDato()
+                        {
+                            Recibido = resultOA2[0].SumRecibido,
+                            Entregado = resultOA2[0].SumEntregado,
+                            Fecha = fecha,
+                            Hora = resultOA2[0].Hora,
+                            PlantaId = resultOA2[0].PlantaId,
+                            ArchivoId = id,
+
+                        });
+                    }
                 }
 
                 await context.SaveChangesAsync(); //operacion 
@@ -397,8 +394,7 @@ namespace GeneracionAPI.Controllers
                        .GroupBy(o => new
                        {
                            PlantaId = plantaPS.Id,
-                        // Fecha = Convert.ToDateTime(o.Cells[1].CalculatedValue),
-                        Fecha = fecha,
+                           Fecha = fecha,
                            Hora = i == 0 ? 23 : i - 1,
 
                        })
@@ -460,20 +456,59 @@ namespace GeneracionAPI.Controllers
             
             await context.SaveChangesAsync();
         }
-            protected bool CheckDate(String date)
-    {
+        protected bool CheckDate(String date)
+        {
         DateTime Temp;
-
-
+        
         if (DateTime.TryParse(date, out Temp) == true)
             return true;
         else
             return false;
-    }
-        private static String LikeToRegular(String value)
-        {
-            return "^" + Regex.Escape(value).Replace("_", ".").Replace("%", ".*") + "$";
         }
+
+        private void  grabarCurvaDemandaInicial()
+        {
+            DateTime fecha1 = DateTime.Parse("01/01/2020"); 
+            DateTime fecha2 = DateTime.Parse("31/01/2020");
+            var Archivos = context.Archivos.Where(y => y.SCADA == true && y.Fecha >= fecha1 && y.Fecha <= fecha2);
+                
+            
+            foreach(Archivo archivoSCADA in Archivos)
+            {
+                ExcelEngine excelEngine = new ExcelEngine();
+
+                IApplication application = excelEngine.Excel;
+
+                application.DefaultVersion = ExcelVersion.Excel2013;
+
+                string basePath = "Z:"+ @"\wwwroot/"+ @"archivos/"+  Path.GetFileName (archivoSCADA.Ruta);
+
+                FileStream currentFile = new FileStream( basePath, FileMode.Open);
+
+                IWorkbook workbook = application.Workbooks.Open(currentFile);
+
+                foreach (IWorksheet hoja in workbook.Worksheets)
+                {
+                    if (hoja.Name=="Curva de Demanda")
+                    {
+                        for (int h = 3; h < hoja.Rows.Length; h++)
+                        {
+                            context.Add(new Entidades.CurvaDemandaValor()
+                            {
+                                Valor = float.Parse(hoja.Range["B" + h.ToString()].DisplayText),
+                                Fecha = archivoSCADA.Fecha,
+                                Hora = DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Hour,
+                                Minuto = DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Minute,
+                                ArchivoId = archivoSCADA.Id,
+                            });
+                        }
+                    }
+                }
+
+            }
+      
+        }
+
     }
 
 }

@@ -18,6 +18,7 @@ namespace GeneracionAPI.Contexts
 
         }
 
+        public DbSet<CurvaDemandaValor> CurvaDemandaValores { get; set; }
         public DbSet<Fuente> Fuentes { get; set; }
         public DbSet<Zona> Zonas { get; set; }
         public DbSet<Nivel> Niveles{ get; set; }
@@ -46,7 +47,10 @@ namespace GeneracionAPI.Contexts
             modelBuilder.Entity<ScadaValor>()
                 .HasIndex(p => new { p.Fecha, p.Hora,p.PlantaId })
                 .IsUnique(true);
-            SeedData(modelBuilder);
+            
+            modelBuilder.Entity<CurvaDemandaValor>()
+                .HasIndex(p => new { p.Fecha, p.Hora, p.Minuto })
+                .IsUnique(true);
 
             modelBuilder.Entity<ComercialDato>()
                 .HasIndex(p => new { p.Fecha, p.Hora, p.PlantaId })

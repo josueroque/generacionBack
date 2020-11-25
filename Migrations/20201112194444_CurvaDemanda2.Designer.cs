@@ -4,14 +4,16 @@ using GeneracionAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GeneracionAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201112194444_CurvaDemanda2")]
+    partial class CurvaDemanda2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,9 +90,6 @@ namespace GeneracionAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ArchivoId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
@@ -104,11 +103,6 @@ namespace GeneracionAPI.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ArchivoId");
-
-                    b.HasIndex("Fecha", "Hora", "Minuto")
-                        .IsUnique();
 
                     b.ToTable("CurvaDemandaValores");
                 });
@@ -536,15 +530,6 @@ namespace GeneracionAPI.Migrations
                     b.HasOne("GeneracionAPI.Entidades.Planta", "Planta")
                         .WithMany()
                         .HasForeignKey("PlantaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GeneracionAPI.Entidades.CurvaDemandaValor", b =>
-                {
-                    b.HasOne("GeneracionAPI.Entidades.Archivo", "Archivo")
-                        .WithMany()
-                        .HasForeignKey("ArchivoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
