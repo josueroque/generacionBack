@@ -4,14 +4,16 @@ using GeneracionAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GeneracionAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201204175748_InadvertidoValor")]
+    partial class InadvertidoValor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,6 +154,9 @@ namespace GeneracionAPI.Migrations
                     b.Property<int>("Hora")
                         .HasColumnType("int");
 
+                    b.Property<int>("Minuto")
+                        .HasColumnType("int");
+
                     b.Property<float?>("UT")
                         .HasColumnType("real");
 
@@ -159,7 +164,7 @@ namespace GeneracionAPI.Migrations
 
                     b.HasIndex("ArchivoId");
 
-                    b.HasIndex("Fecha", "Hora")
+                    b.HasIndex("Fecha", "Hora", "Minuto")
                         .IsUnique();
 
                     b.ToTable("InadvertidoValores");

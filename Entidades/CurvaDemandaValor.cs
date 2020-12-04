@@ -11,7 +11,7 @@ namespace GeneracionAPI.Entidades
         public DateTime Fecha { get; set;}
         public int Hora { get; set; }
         public int Minuto { get; set; }
-        public float Valor { get; set; }
+        public Nullable<float> Valor { get; set; }
         public int ArchivoId { get; set;}
         public Archivo Archivo { get; set; }
 

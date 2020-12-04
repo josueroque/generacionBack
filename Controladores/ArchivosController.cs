@@ -134,7 +134,9 @@ namespace GeneracionAPI.Controllers
             var fechaCorta = fecha.Date;
             var archivo = await context.Archivos
                 .FirstOrDefaultAsync(x => x.Fecha <= fecha && x.Fecha >= fecha && x.SCADA==scada);
-                 grabarCurvaDemandaInicial();
+            //Mantener comentado solo se usa la primera vez para guardar la curva de demanda a partir de los archivos excel  
+            // await   grabarCurvaDemandaInicial();
+          //  await grabarInadvertidoInicial();
             if (archivo == null)
             {
                 return NotFound();
@@ -150,7 +152,6 @@ namespace GeneracionAPI.Controllers
 
             return await Delete<Archivo>(id);
         }
-
 
         private async Task procesarExcel(int id, string nombreArchivo, DateTime fecha)
         {
@@ -191,7 +192,6 @@ namespace GeneracionAPI.Controllers
                     if (hoja.Name != "Curva_Demanda" && hoja.Name != "Inadvertido" && hoja.Name != "Frecuencia")
                     {
 
-                        //      for (int i = 0; i < hoja.Columns.Length; i++)
                         for (int i = 1; i <= hoja.Columns.Length-1; i++)
                         {
 
@@ -244,9 +244,25 @@ namespace GeneracionAPI.Controllers
                             });
                         }
                     }
-                    
-                    await context.SaveChangesAsync();
+
+                    if (hoja.Name == "Inadvertido")
+                    {
+                        for (int k = 4; k <=27; k++)
+                        {
+                            context.Add(new Entidades.InadvertidoValor()
+                            {
+                                AMM= float.Parse(hoja.Range["B" + k.ToString()].DisplayText),
+                                UT = float.Parse(hoja.Range["C" + k.ToString()].DisplayText),
+                                ENATREL = float.Parse(hoja.Range["D" + k.ToString()].DisplayText),
+                                Fecha = fecha,
+                                Hora = Int16.Parse(hoja.Range["A" + k.ToString()].CalculatedValue),
+                                ArchivoId = id,
+                            });
+                        }
+                    }
+                                                          
                 }
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -466,48 +482,117 @@ namespace GeneracionAPI.Controllers
             return false;
         }
 
-        private void  grabarCurvaDemandaInicial()
+        private async Task grabarCurvaDemandaInicial()
         {
-            DateTime fecha1 = DateTime.Parse("01/01/2020"); 
-            DateTime fecha2 = DateTime.Parse("31/01/2020");
-            var Archivos = context.Archivos.Where(y => y.SCADA == true && y.Fecha >= fecha1 && y.Fecha <= fecha2);
-                
-            
-            foreach(Archivo archivoSCADA in Archivos)
-            {
-                ExcelEngine excelEngine = new ExcelEngine();
+            try { 
 
-                IApplication application = excelEngine.Excel;
+                DateTime fecha1 = DateTime.Parse("01/01/2019");
+                DateTime fecha2 = DateTime.Parse("31/12/2019");
+                var Archivos = context.Archivos.Where(y => y.SCADA == true && y.Fecha >= fecha1 && y.Fecha <= fecha2);
 
-                application.DefaultVersion = ExcelVersion.Excel2013;
-
-                string basePath = "Z:"+ @"\wwwroot/"+ @"archivos/"+  Path.GetFileName (archivoSCADA.Ruta);
-
-                FileStream currentFile = new FileStream( basePath, FileMode.Open);
-
-                IWorkbook workbook = application.Workbooks.Open(currentFile);
-
-                foreach (IWorksheet hoja in workbook.Worksheets)
+                foreach (Archivo archivoSCADA in Archivos)
                 {
-                    if (hoja.Name=="Curva de Demanda")
+                    ExcelEngine excelEngine = new ExcelEngine();
+
+                    IApplication application = excelEngine.Excel;
+
+                    application.DefaultVersion = ExcelVersion.Excel2013;
+
+                    string basePath = "Z:" + @"\wwwroot/" + @"archivos/" + Path.GetFileName(archivoSCADA.Ruta);
+
+                    FileStream currentFile = new FileStream(basePath, FileMode.Open);
+
+                    IWorkbook workbook = application.Workbooks.Open(currentFile);
+
+                    foreach (IWorksheet hoja in workbook.Worksheets)
                     {
-                        for (int h = 3; h < hoja.Rows.Length; h++)
+                        if (hoja.Name == "Curva de Demanda" || hoja.Name == "Curva_Demanda")
                         {
-                            context.Add(new Entidades.CurvaDemandaValor()
+                            for (int h = 3; h < hoja.Rows.Length; h++)
                             {
-                                Valor = float.Parse(hoja.Range["B" + h.ToString()].DisplayText),
-                                Fecha = archivoSCADA.Fecha,
-                                Hora = DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Hour,
-                                Minuto = DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Minute,
-                                ArchivoId = archivoSCADA.Id,
-                            });
+                                Nullable<float> Valor = 0;
+                                if (hoja.Range["B" + h.ToString()].DisplayText != "")
+                                {
+                                    Valor = float.Parse(hoja.Range["B" + h.ToString()].DisplayText);
+                                }
+                                else
+                                {
+                                    Valor= null;
+                                }
+
+                                context.Add(new Entidades.CurvaDemandaValor()
+                                {
+                                    Valor = Valor,
+                                    Fecha = archivoSCADA.Fecha,
+                                    Hora =  DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Hour ,
+                                    Minuto = DateTime.Parse(hoja.Range["A" + h.ToString()].CalculatedValue).Minute,
+                                    ArchivoId = archivoSCADA.Id,
+                                });
+                            }
                         }
                     }
-                }
 
+                }
+            //    await context.SaveChangesAsync();
             }
-      
+            catch (Exception error)
+            {
+                var ex = error;
+            }
         }
+
+        private async Task grabarInadvertidoInicial()
+        {
+            try
+            {
+
+                DateTime fecha1 = DateTime.Parse("01/02/2020");
+                DateTime fecha2 = DateTime.Parse("30/11/2020");
+                var Archivos = context.Archivos.Where(y => y.SCADA == true && y.Fecha >= fecha1 && y.Fecha <= fecha2);
+
+                foreach (Archivo archivoSCADA in Archivos)
+                {
+                    ExcelEngine excelEngine = new ExcelEngine();
+
+                    IApplication application = excelEngine.Excel;
+
+                    application.DefaultVersion = ExcelVersion.Excel2013;
+
+                    string basePath = "Z:" + @"\wwwroot/" + @"archivos/" + Path.GetFileName(archivoSCADA.Ruta);
+
+                    FileStream currentFile = new FileStream(basePath, FileMode.Open);
+
+                    IWorkbook workbook = application.Workbooks.Open(currentFile);
+
+                    foreach (IWorksheet hoja in workbook.Worksheets)
+                    {
+                        if (hoja.Name == "Inadvertido")
+                        {
+                            for (int h = 4; h <= 27; h++)
+                            {
+
+                                context.Add(new Entidades.InadvertidoValor()
+                                {
+                                    AMM = float.Parse(hoja.Range["B" + h.ToString()].DisplayText),
+                                    UT = float.Parse(hoja.Range["C" + h.ToString()].DisplayText),
+                                    ENATREL = float.Parse(hoja.Range["D" + h.ToString()].DisplayText),
+                                    Hora = Int16.Parse(hoja.Range["A" + h.ToString()].CalculatedValue),
+                                    Fecha = archivoSCADA.Fecha,
+                                    ArchivoId = archivoSCADA.Id,
+                                });
+                            }
+                        }
+                    }
+
+                }
+               //     await context.SaveChangesAsync();
+            }
+            catch (Exception error)
+            {
+                var ex = error;
+            }
+        }
+
 
     }
 

@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Security.Claims;
+//using System.Threading.Tasks;
 
 namespace GeneracionAPI.Contexts
 {
@@ -19,6 +19,7 @@ namespace GeneracionAPI.Contexts
         }
 
         public DbSet<CurvaDemandaValor> CurvaDemandaValores { get; set; }
+        public DbSet<InadvertidoValor> InadvertidoValores { get; set; }
         public DbSet<Fuente> Fuentes { get; set; }
         public DbSet<Zona> Zonas { get; set; }
         public DbSet<Nivel> Niveles{ get; set; }
@@ -50,6 +51,10 @@ namespace GeneracionAPI.Contexts
             
             modelBuilder.Entity<CurvaDemandaValor>()
                 .HasIndex(p => new { p.Fecha, p.Hora, p.Minuto })
+                .IsUnique(true);
+
+            modelBuilder.Entity<InadvertidoValor>()
+                .HasIndex(p => new { p.Fecha, p.Hora })
                 .IsUnique(true);
 
             modelBuilder.Entity<ComercialDato>()

@@ -4,14 +4,16 @@ using GeneracionAPI.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GeneracionAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201130221204_CurvaDemandaNulleableValor")]
+    partial class CurvaDemandaNulleableValor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,41 +130,6 @@ namespace GeneracionAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Fuentes");
-                });
-
-            modelBuilder.Entity("GeneracionAPI.Entidades.InadvertidoValor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<float?>("AMM")
-                        .HasColumnType("real");
-
-                    b.Property<int>("ArchivoId")
-                        .HasColumnType("int");
-
-                    b.Property<float?>("ENATREL")
-                        .HasColumnType("real");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Hora")
-                        .HasColumnType("int");
-
-                    b.Property<float?>("UT")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArchivoId");
-
-                    b.HasIndex("Fecha", "Hora")
-                        .IsUnique();
-
-                    b.ToTable("InadvertidoValores");
                 });
 
             modelBuilder.Entity("GeneracionAPI.Entidades.Nivel", b =>
@@ -576,15 +543,6 @@ namespace GeneracionAPI.Migrations
                 });
 
             modelBuilder.Entity("GeneracionAPI.Entidades.CurvaDemandaValor", b =>
-                {
-                    b.HasOne("GeneracionAPI.Entidades.Archivo", "Archivo")
-                        .WithMany()
-                        .HasForeignKey("ArchivoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GeneracionAPI.Entidades.InadvertidoValor", b =>
                 {
                     b.HasOne("GeneracionAPI.Entidades.Archivo", "Archivo")
                         .WithMany()
